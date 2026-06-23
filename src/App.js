@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
 import './App.css';
+import Browse from './pages/Browse';
 import MealDetails from './pages/MealDetails';
 
 function App() {
   const [email, setEmail] = useState('');
   const [currentPage, setCurrentPage] = useState('home');
+  const [selectedMealId, setSelectedMealId] = useState(null);
 
-  // If current page is 'meal-details', show the MealDetails page
+  // Handle navigation with optional meal ID
+  const navigateTo = (page, mealId = null) => {
+    setCurrentPage(page);
+    if (mealId) {
+      setSelectedMealId(mealId);
+    }
+  };
+
+  // Show Browse page
+  if (currentPage === 'browse') {
+    return <Browse setCurrentPage={navigateTo} />;
+  }
+
+  // Show MealDetails page
   if (currentPage === 'meal-details') {
-    return <MealDetails setCurrentPage={setCurrentPage} />;
+    return <MealDetails setCurrentPage={navigateTo} mealId={selectedMealId} />;
   }
 
   // HOME PAGE
@@ -27,7 +42,7 @@ function App() {
           <div className="nav-links">
             <button 
               className="browse-nav-btn"
-              onClick={() => setCurrentPage('meal-details')}
+              onClick={() => navigateTo('browse')}
             >
               Browse
             </button>
@@ -63,7 +78,7 @@ function App() {
             <div className="hero-buttons">
               <button 
                 className="btn-primary"
-                onClick={() => setCurrentPage('meal-details')}
+                onClick={() => navigateTo('browse')}
               >
                 Browse Live Deals
               </button>
@@ -170,14 +185,14 @@ function App() {
             </div>
             <button 
               className="view-all"
-              onClick={() => setCurrentPage('meal-details')}
+              onClick={() => navigateTo('browse')}
             >
               View All <span className="material-symbols-outlined">arrow_forward</span>
             </button>
           </div>
           <div className="deals-grid">
             {/* Card 1 */}
-            <div className="deal-card" onClick={() => setCurrentPage('meal-details')}>
+            <div className="deal-card" onClick={() => navigateTo('browse')}>
               <div className="deal-image">
                 <img 
                   alt="Gourmet Skewers" 
@@ -194,7 +209,7 @@ function App() {
             </div>
 
             {/* Card 2 */}
-            <div className="deal-card" onClick={() => setCurrentPage('meal-details')}>
+            <div className="deal-card" onClick={() => navigateTo('browse')}>
               <div className="deal-image">
                 <img 
                   alt="Avocado Toast" 
@@ -211,7 +226,7 @@ function App() {
             </div>
 
             {/* Card 3 */}
-            <div className="deal-card" onClick={() => setCurrentPage('meal-details')}>
+            <div className="deal-card" onClick={() => navigateTo('browse')}>
               <div className="deal-image">
                 <img 
                   alt="Pastries" 
@@ -228,7 +243,7 @@ function App() {
             </div>
 
             {/* Card 4 */}
-            <div className="deal-card" onClick={() => setCurrentPage('meal-details')}>
+            <div className="deal-card" onClick={() => navigateTo('browse')}>
               <div className="deal-image">
                 <img 
                   alt="Salmon Bowl" 
