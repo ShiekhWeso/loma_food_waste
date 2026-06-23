@@ -1,17 +1,36 @@
 import React, { useState } from 'react';
 import './App.css';
+import MealDetails from './pages/MealDetails';
 
 function App() {
   const [email, setEmail] = useState('');
+  const [currentPage, setCurrentPage] = useState('home');
 
+  // If current page is 'meal-details', show the MealDetails page
+  if (currentPage === 'meal-details') {
+    return <MealDetails setCurrentPage={setCurrentPage} />;
+  }
+
+  // HOME PAGE
   return (
     <div className="app">
       {/* TopNavBar */}
       <nav className="navbar">
         <div className="nav-container">
-          <div className="logo">Lo’ma</div>
+          <div 
+            className="logo" 
+            onClick={() => setCurrentPage('home')}
+            style={{ cursor: 'pointer' }}
+          >
+            Lo’ma
+          </div>
           <div className="nav-links">
-            <a href="#">Browse</a>
+            <button 
+              className="browse-nav-btn"
+              onClick={() => setCurrentPage('meal-details')}
+            >
+              Browse
+            </button>
             <a href="#">How it Works</a>
             <a href="#">Impact</a>
             <a href="#">Dashboard</a>
@@ -42,7 +61,12 @@ function App() {
               Connecting surplus artisan meals with conscious diners. High-end culinary experiences at impossible prices, served with a side of environmental impact.
             </p>
             <div className="hero-buttons">
-              <button className="btn-primary">Browse Live Deals</button>
+              <button 
+                className="btn-primary"
+                onClick={() => setCurrentPage('meal-details')}
+              >
+                Browse Live Deals
+              </button>
               <button className="btn-secondary">Partner with Us</button>
             </div>
           </div>
@@ -144,13 +168,16 @@ function App() {
               <h2 className="section-title">Live Opportunities</h2>
               <p className="deals-subtitle">Fresh, delicious, and waiting for a home.</p>
             </div>
-            <button className="view-all">
+            <button 
+              className="view-all"
+              onClick={() => setCurrentPage('meal-details')}
+            >
               View All <span className="material-symbols-outlined">arrow_forward</span>
             </button>
           </div>
           <div className="deals-grid">
             {/* Card 1 */}
-            <div className="deal-card">
+            <div className="deal-card" onClick={() => setCurrentPage('meal-details')}>
               <div className="deal-image">
                 <img 
                   alt="Gourmet Skewers" 
@@ -167,7 +194,7 @@ function App() {
             </div>
 
             {/* Card 2 */}
-            <div className="deal-card">
+            <div className="deal-card" onClick={() => setCurrentPage('meal-details')}>
               <div className="deal-image">
                 <img 
                   alt="Avocado Toast" 
@@ -184,7 +211,7 @@ function App() {
             </div>
 
             {/* Card 3 */}
-            <div className="deal-card">
+            <div className="deal-card" onClick={() => setCurrentPage('meal-details')}>
               <div className="deal-image">
                 <img 
                   alt="Pastries" 
@@ -200,8 +227,8 @@ function App() {
               </div>
             </div>
 
-            {/* Card 4 - FIXED SALMON IMAGE */}
-            <div className="deal-card">
+            {/* Card 4 */}
+            <div className="deal-card" onClick={() => setCurrentPage('meal-details')}>
               <div className="deal-image">
                 <img 
                   alt="Salmon Bowl" 

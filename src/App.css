@@ -683,3 +683,36 @@ main {
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+/* Browse Navigation Button - matches Sign Up button style */
+.browse-nav-btn {
+  background-color: #ac2d00;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.browse-nav-btn:hover {
+  background-color: #d63c05;
+  transform: scale(1.02);
+}
+
+.browse-nav-btn:active {
+  transform: scale(0.95);
+}
+
+/* Logo clickable */
+.logo {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}

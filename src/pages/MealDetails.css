@@ -1,0 +1,847 @@
+/* ===== NAVBAR ===== */
+.meal-navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+  background-color: rgba(246, 251, 237, 0.8);
+  backdrop-filter: blur(12px);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.meal-nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.meal-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.meal-logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #ac2d00;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.meal-logo:hover {
+  opacity: 0.7;
+}
+
+.meal-nav-links {
+  display: none;
+  align-items: center;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .meal-nav-links {
+    display: flex;
+  }
+}
+
+.meal-nav-link {
+  color: #5b4039;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+  font-family: 'Manrope', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.meal-nav-link:hover {
+  color: #d63c05;
+}
+
+.meal-nav-link.active {
+  color: #ac2d00;
+  font-weight: 600;
+  border-bottom: 2.5px solid #ac2d00;
+  padding-bottom: 0.3rem;
+}
+
+.meal-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.meal-nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.meal-icon-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  color: #5b4039;
+  cursor: pointer;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.meal-icon-btn:hover {
+  color: #ac2d00;
+}
+
+.meal-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.meal-login-btn {
+  background: none;
+  border: none;
+  color: #5b4039;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-login-btn:hover {
+  color: #d63c05;
+}
+
+.meal-signup-btn {
+  background-color: #ac2d00;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-signup-btn:hover {
+  background-color: #d63c05;
+  transform: scale(1.02);
+}
+
+.meal-signup-btn:active {
+  transform: scale(0.95);
+}
+
+.meal-cart-btn {
+  background-color: #f0f6e8;
+  color: #ac2d00;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-cart-btn:hover {
+  background-color: #dfe5d7;
+}
+
+.meal-cart-btn:active {
+  transform: scale(0.95);
+}
+
+.meal-cart-btn .material-symbols-outlined {
+  font-size: 1.125rem;
+}
+
+/* ===== MAIN CONTENT ===== */
+.meal-main {
+  padding-top: 6rem;
+  padding-bottom: 5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .meal-main {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+/* ===== HERO GRID ===== */
+.meal-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+@media (min-width: 1024px) {
+  .meal-hero-grid {
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 3rem;
+    align-items: start;
+  }
+}
+
+/* Left Column */
+.meal-hero-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.meal-hero-image-wrapper {
+  position: relative;
+  border-radius: 2rem;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+.meal-hero-image {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+}
+
+.meal-badges-container {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.meal-badge {
+  padding: 0.6rem 1.2rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+  font-family: 'Manrope', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.meal-badge .material-symbols-outlined {
+  font-size: 1.125rem;
+}
+
+.fresh-badge {
+  background-color: #a0f399;
+  color: #0a3d12;
+}
+
+.timer-badge {
+  background-color: #ffdcc2;
+  color: #5a2e00;
+}
+
+/* Restaurant Card */
+.meal-restaurant-card {
+  background-color: #f0f6e8;
+  padding: 1.5rem 2rem;
+  border-radius: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: box-shadow 0.2s;
+}
+
+.meal-restaurant-card:hover {
+  box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.08);
+}
+
+.meal-restaurant-info {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.meal-restaurant-avatar {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  background-color: #dfe5d7;
+  flex-shrink: 0;
+}
+
+.meal-restaurant-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.meal-restaurant-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #181d15;
+  letter-spacing: -0.02em;
+}
+
+.meal-restaurant-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1b6d24;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  font-family: 'Manrope', sans-serif;
+}
+
+.star-icon {
+  font-size: 1rem;
+  font-variation-settings: 'FILL' 1;
+}
+
+.meal-rating-divider {
+  color: #b8a69e;
+  font-weight: 400;
+}
+
+.meal-menu-btn {
+  background-color: #dfe5d7;
+  color: #181d15;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-menu-btn:hover {
+  background-color: #d0d8c8;
+  transform: scale(1.02);
+}
+
+/* ===== RIGHT COLUMN ===== */
+.meal-hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.meal-details-card {
+  background-color: #ffffff;
+  padding: 2.5rem;
+  border-radius: 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(228, 190, 180, 0.08);
+}
+
+.meal-details-header {
+  margin-bottom: 1.5rem;
+}
+
+.meal-culinary-tag {
+  color: #1b6d24;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  font-family: 'Manrope', sans-serif;
+  display: inline-block;
+  background: rgba(27, 109, 36, 0.08);
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.5rem;
+}
+
+.meal-dish-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 2.4rem;
+  color: #181d15;
+  line-height: 1.15;
+  margin-top: 0.5rem;
+  letter-spacing: -0.03em;
+}
+
+.meal-price-section {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.8rem;
+  flex-wrap: wrap;
+}
+
+.meal-current-price {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 2.6rem;
+  color: #ac2d00;
+  letter-spacing: -0.03em;
+}
+
+.meal-original-price {
+  font-size: 1.2rem;
+  color: #a09088;
+  text-decoration: line-through;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-save-tag {
+  background-color: #ffdbd1;
+  color: #872100;
+  padding: 0.3rem 0.9rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Reason Card */
+.meal-reason-card {
+  background: linear-gradient(135deg, rgba(255, 220, 194, 0.2) 0%, rgba(255, 220, 194, 0.05) 100%);
+  padding: 1.5rem 1.8rem;
+  border-radius: 1.2rem;
+  border-left: 4px solid #8c4c00;
+  margin-bottom: 1.8rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.meal-reason-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.meal-reason-icon {
+  color: #8c4c00;
+  font-size: 1.4rem;
+}
+
+.meal-reason-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  color: #8c4c00;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.meal-reason-text {
+  color: #3d322d;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Eco Info */
+.meal-eco-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.8rem;
+}
+
+.meal-eco-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #181d15;
+  padding: 0.4rem 0;
+}
+
+.meal-eco-icon {
+  color: #1b6d24;
+  font-size: 1.3rem;
+}
+
+.meal-eco-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Add to Cart */
+.meal-add-to-cart-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #ac2d00 0%, #d63c05 100%);
+  color: white;
+  border: none;
+  padding: 1.2rem;
+  border-radius: 1.2rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s;
+  box-shadow: 0 20px 30px -8px rgba(172, 45, 0, 0.3);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.meal-add-to-cart-btn:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 25px 35px -10px rgba(172, 45, 0, 0.4);
+}
+
+.meal-add-to-cart-btn:active {
+  transform: scale(0.97);
+}
+
+.meal-pickup-text {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: #7a6a62;
+  font-weight: 500;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Bento Cards */
+.meal-bento-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.meal-bento-card {
+  background: linear-gradient(135deg, #eaf0e2 0%, #e4eadc 100%);
+  padding: 1.2rem 1.5rem;
+  border-radius: 1.5rem;
+  transition: transform 0.2s;
+}
+
+.meal-bento-card:hover {
+  transform: translateY(-2px);
+}
+
+.meal-bento-icon {
+  color: #1b6d24;
+  margin-bottom: 0.5rem;
+  font-size: 1.6rem;
+}
+
+.meal-bento-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #7a6a62;
+  text-transform: uppercase;
+  margin: 0;
+  letter-spacing: 0.06em;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-bento-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #181d15;
+  margin: 0.2rem 0 0 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ===== RELATED DEALS ===== */
+.meal-related-section {
+  margin-top: 5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.meal-related-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+}
+
+.meal-related-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  color: #181d15;
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+.meal-related-subtitle {
+  color: #7a6a62;
+  margin-top: 0.3rem;
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.95rem;
+}
+
+.meal-view-all-btn {
+  background: none;
+  border: none;
+  color: #ac2d00;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-view-all-btn:hover {
+  gap: 0.6rem;
+  color: #d63c05;
+}
+
+.meal-related-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 640px) {
+  .meal-related-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .meal-related-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.meal-related-card {
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.meal-related-card:hover {
+  transform: translateY(-4px);
+}
+
+.meal-related-card:hover .meal-related-image {
+  transform: scale(1.08);
+}
+
+.meal-related-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  aspect-ratio: 4/3;
+  margin-bottom: 1rem;
+  box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.06);
+}
+
+.meal-related-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.meal-related-tag {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: #b06000;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'Manrope', sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.meal-related-dish {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 0.4rem;
+  transition: color 0.2s;
+  letter-spacing: -0.02em;
+}
+
+.meal-related-card:hover .meal-related-dish {
+  color: #ac2d00;
+}
+
+.meal-related-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.meal-related-prices {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.meal-related-current {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #ac2d00;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.meal-related-original {
+  font-size: 0.85rem;
+  color: #a09088;
+  text-decoration: line-through;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-related-time {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1b6d24;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-related-time .material-symbols-outlined {
+  font-size: 0.875rem;
+}
+
+/* ===== FOOTER ===== */
+.meal-footer {
+  background-color: #f0f6e8;
+  padding: 3rem 2rem;
+  margin-top: 5rem;
+  width: 100%;
+}
+
+.meal-footer-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .meal-footer-container {
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  }
+}
+
+.meal-footer-logo {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: #1b6d24;
+  letter-spacing: -0.03em;
+}
+
+.meal-footer-text {
+  color: #8a7a72;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin-top: 1rem;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-footer-heading {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  color: #181d15;
+  font-size: 1rem;
+}
+
+.meal-footer-link {
+  display: block;
+  color: #8a7a72;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+  transition: all 0.2s;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-footer-link:hover {
+  color: #1b6d24;
+  text-decoration: underline;
+}
+
+.meal-newsletter {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.meal-newsletter-input {
+  flex: 1;
+  background-color: white;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.9rem;
+  font-family: 'Manrope', sans-serif;
+}
+
+.meal-newsletter-input:focus {
+  outline: 2px solid #ac2d00;
+  outline-offset: 2px;
+}
+
+.meal-newsletter-btn {
+  background-color: #1b6d24;
+  color: white;
+  border: none;
+  padding: 0.7rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.meal-newsletter-btn:hover {
+  background-color: #0a4d12;
+}
+
+.meal-newsletter-btn:active {
+  transform: scale(0.95);
+}
+
+.meal-footer-bottom {
+  max-width: 1280px;
+  margin: 3rem auto 0;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.meal-footer-bottom p {
+  color: #8a7a72;
+  font-size: 0.85rem;
+  font-family: 'Manrope', sans-serif;
+}
