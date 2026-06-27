@@ -1,0 +1,246 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "email": "customer@example.com",
+      "password": "password",
+      "name": "Sarah Connor",
+      "role": "customer",
+      "locationAddress": "Cairo, Maadi",
+      "locationCoords": { "lat": 30.0444, "lng": 31.2357 }
+    },
+    {
+      "id": "u2",
+      "email": "kitchen@example.com",
+      "password": "password",
+      "name": "The Conscious Kitchen",
+      "role": "restaurant",
+      "locationAddress": "Road 9, Maadi, Cairo",
+      "locationCoords": { "lat": 30.0444, "lng": 31.2357 }
+    },
+    {
+      "id": "u_sprout",
+      "email": "sprout@example.com",
+      "password": "password",
+      "name": "Green Sprout Cafe",
+      "role": "restaurant",
+      "locationAddress": "26 July St, Zamalek, Cairo",
+      "locationCoords": { "lat": 30.0584, "lng": 31.2287 }
+    },
+    {
+      "id": "u_artisan",
+      "email": "artisan@example.com",
+      "password": "password",
+      "name": "L'Artisan Boulangerie",
+      "role": "restaurant",
+      "locationAddress": "El-Qasr El-Eini St, Garden City, Cairo",
+      "locationCoords": { "lat": 30.0334, "lng": 31.2157 }
+    },
+    {
+      "id": "u_freshtable",
+      "email": "fresh@example.com",
+      "password": "password",
+      "name": "The Fresh Table",
+      "role": "restaurant",
+      "locationAddress": "El-Ahram St, Heliopolis, Cairo",
+      "locationCoords": { "lat": 30.0784, "lng": 31.2857 }
+    },
+    {
+      "id": "u_1782402871311",
+      "email": "aws@gmail.com",
+      "password": "123",
+      "name": "kr",
+      "role": "restaurant",
+      "locationAddress": "Maadi, Cairo",
+      "locationCoords": { "lat": 30.0444, "lng": 31.2357 }
+    },
+    {
+      "id": "u_1782403918417",
+      "email": "wdad@gmail.com",
+      "password": "123",
+      "name": "ao2r",
+      "role": "customer",
+      "locationAddress": "Cairo, Maadi",
+      "locationCoords": { "lat": 30.0444, "lng": 31.2357 }
+    },
+    {
+      "id": "u_1782552472625",
+      "email": "sarah.customer@gmail.com",
+      "name": "Sarah Connor",
+      "role": "customer",
+      "password": "google_oauth_87049b36dade0701",
+      "picture": "https://api.dicebear.com/7.x/adventurer/svg?seed=Sarah",
+      "locationAddress": "Cairo, Maadi",
+      "locationCoords": { "lat": 30.0444, "lng": 31.2357 }
+    },
+    {
+      "id": "u_1782552672253",
+      "email": "tohawk707@gmail.com",
+      "name": "Ahmed Osama",
+      "role": "customer",
+      "password": "google_oauth_8448d468f637efd5",
+      "picture": "https://lh3.googleusercontent.com/a/ACg8ocJm9k_-4JvkDjZqdV5h0PZGdYrtLtUb4yoVOCvlPEHh4WPy_7k=s96-c",
+      "locationAddress": "Cairo, Maadi",
+      "locationCoords": { "lat": 30.0444, "lng": 31.2357 }
+    },
+    {
+      "id": "u_1782553105578",
+      "email": "tohawk617@gmail.com",
+      "name": "Ahmed Osama",
+      "role": "restaurant",
+      "password": "google_oauth_7c67b83514a8cabf",
+      "picture": "https://lh3.googleusercontent.com/a/ACg8ocKjYTowBvX1ta7UEfMgZ18nz09GlzxVHNWqAUdsj71rKw6YhQc=s96-c",
+      "locationAddress": "Zamalek, Cairo",
+      "locationCoords": { "lat": 30.0584, "lng": 31.2287 }
+    }
+  ],
+  "meals": [
+    {
+      "id": 1,
+      "name": "Harvest Grain Bowl",
+      "restaurant": "The Conscious Kitchen",
+      "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuBs69rpXDefIGnyfp-uNRDCWFx4xa5OFlWq8cdkWeRF3Rsgb8IYI_Vp0aRQu979Rh0LFA-KApjBaKr7w0humXv2Ry_Kgf41aqErEcEmpT9WXFB3E_2LaHq4-7hWcX2eaMmujWZ2g47o0mXi3lcI4nwDc-tW4ekAMqjHQhraanwYCYGWjotEh9-eAmzaxpeITvk4o0_riSiqKbVFSu_Wz9NjskzxnPglwNskx1_c0HE6Sb1kJxrzZ_yTyQd3zck7WuSXIxHH-foe0Zk",
+      "status": "Expiring Soon",
+      "statusColor": "#b06000",
+      "statusBg": "#ffdcc2",
+      "originalPrice": 18,
+      "rescuePrice": 9,
+      "discount": 50,
+      "expiresIn": "45 mins",
+      "qty": 3,
+      "category": "Bowls",
+      "distance": "0.3 mi",
+      "description": "Vibrant salad bowl with roasted sweet potatoes, warm tri-color quinoa, dynamic avocados, organic kale, and a house-made tahini lemon dressing."
+    },
+    {
+      "id": 2,
+      "name": "Truffle Mushroom Risotto",
+      "restaurant": "The Conscious Kitchen",
+      "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuA-7_RT4rQ0kWiGFIczXW2c_gcIN_JNWYaRFK10e13zqmEDxMJycQqu-tAX_HTdtKxRqUGA8U9BMRUJ2UPPN7fPP0Y5YE7JcsihcmPcvmmAfsFNGf9J4UYD6r4_AncdMs3WHoTYpnXLZ7QLN8eOjLxXAQAxNGg1LCmttZWXKZkr4SAd84521I550FhLUCmQfrrWgQYwc5I3wD6RoWB_Dz_d1UI5vm2pPVGBnUFFBj2QoRgmQ54tIUKK5gzkTpBgaE7o8wTl5Ty3W5M",
+      "status": "Active",
+      "statusColor": "#1b6d24",
+      "statusBg": "#a3f69c",
+      "originalPrice": 24,
+      "rescuePrice": 14,
+      "discount": 42,
+      "expiresIn": "2 hrs",
+      "qty": 5,
+      "category": "Mains",
+      "distance": "0.3 mi",
+      "description": "Luxurious Arborio rice slowly simmered in rich vegetable broth, finished with exotic wild mushrooms, high-grade truffle oil, and aged parmesan cheese."
+    },
+    {
+      "id": 3,
+      "name": "Mediterranean Mezze Plate",
+      "restaurant": "The Conscious Kitchen",
+      "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuC7doemRmgARVnIp4b3cyq2NuOREMCOiZsx9_I6N1ynCAY3K_siHIe5Im-cd6zMWd-N5-iAlt4h82SJd62n6ur8UOofEUQxvHtakTXpjXKzb3gkgOUXpFSghfsfa9soFm_dayfpwu5XrJRyrV10GMw_pisdd-UQ6AmAB2QZmN00k3CMYFbJr8A1LSqHvNCbRnKbJwQc2UnowoA-zZs0qjtSjEzT71XBgxe_TaS-isx7eXdJFc8U7CggOPj6KDzHijoKcKGGR8gSmEY",
+      "status": "Active",
+      "statusColor": "#1b6d24",
+      "statusBg": "#a3f69c",
+      "originalPrice": 22,
+      "rescuePrice": 12,
+      "discount": 45,
+      "expiresIn": "3 hrs",
+      "qty": 7,
+      "category": "Sharing",
+      "distance": "0.3 mi",
+      "description": "Artisan flight of house-made hummus, organic red pepper muhammara, cucumber tzatziki, warm whole-wheat pita bread, kalamata olives, and fresh herbs."
+    },
+    {
+      "id": 4,
+      "name": "Mediterranean Grill Set",
+      "restaurant": "The Conscious Kitchen",
+      "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuDaCVmdhRQc-jENQd7Hn2CHRk17TcINAtc9I32I0MZ4XFD--DHJ6b5GfB_NVYNjZykLzBipUjQtpYrOcy9dn_jLMpCJZjR-R7eOfmszeUvFEAINUxQE1jrS4K7CS8gnWQSt6XVgl4g-60wLtTXdJRCmwhH0D8e_20vA8pLzk8CR-UPfA60skS_zLaGDn6DEQzZpxVdxymMiC0h-Ljw2o_dYfpKPoUo0yo7G8I6TSDkyzL-ZL1YKs3-9VHR7ekEtJs1tJOmaOWqdink",
+      "status": "Active",
+      "statusColor": "#1b6d24",
+      "statusBg": "#a3f69c",
+      "originalPrice": 22,
+      "rescuePrice": 8.5,
+      "discount": 61,
+      "expiresIn": "4 mins",
+      "qty": 1,
+      "category": "Mains",
+      "distance": "0.4 mi",
+      "description": "Gourmet grilled chicken skewers marinated in Mediterranean yogurt and lemon, grilled to perfection, served with roasted peppers, red onions, and tzatziki."
+    },
+    {
+      "id": 5,
+      "name": "Artisan Brunch Platter",
+      "restaurant": "Green Sprout Cafe",
+      "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuAQSsSMy-eqU1f8EFGlD9xHdQZgQq89T4btc4S9ePjLEG9zlI95sMKRqMfK4rebz-nSASCjZDLx0jG_R9YOEBsvZzNKRjJFN3R2BedRpnpkDM0jwAGQao8gNfO_UR1PYH85if-NamhqwerIg9s1ezNgnwr3T5B9U2ZMjj4UCzi8jA4WZPQzIdg39iZFiyVzcQxsTg4agOiRNWhW3EwfR4JhVixpoAglDxfFDhKgHm9B_3WMQaqM0Qg_dq9PA37JtA9B-Mipb6EOXGw",
+      "status": "Active",
+      "statusColor": "#1b6d24",
+      "statusBg": "#a3f69c",
+      "originalPrice": 14.5,
+      "rescuePrice": 6,
+      "discount": 58,
+      "expiresIn": "2 meals left",
+      "qty": 2,
+      "category": "Sharing",
+      "distance": "1.2 mi",
+      "description": "Artisan sourdough bread topped with creamy smashed Haas avocados, heirloom radishes, microgreens, and organic pasture-raised poached eggs."
+    },
+    {
+      "id": 6,
+      "name": "Pastry Surprise Box",
+      "restaurant": "L'Artisan Boulangerie",
+      "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuC14W2OOGKeJifIRX1jGJNwF13y3o-SB3bK6OygyybcOOyScJIOQplI5Njx7ImfmQCErGMrf7KUUNr8A5mdj2d9dCOe5RLf8X4wODSMRaIa0e0CgFvfNZWQYrD-EsjvYAYvJ1eikXFI5tjAjRfjT5FvAavg-LdCrY9RZVpvTqXURC_mR8woiPIkPu_xLo2DDt5SmEInZ69NpCKSbBkn_zHIz8kN8NheeFH86CHM3XnQ9q2c67-63v6LnZgHYVjiCQJSwkyVfQ2Rbfk",
+      "status": "Expiring Soon",
+      "statusColor": "#b06000",
+      "statusBg": "#ffdcc2",
+      "originalPrice": 18,
+      "rescuePrice": 4.5,
+      "discount": 75,
+      "expiresIn": "12 mins",
+      "qty": 4,
+      "category": "Desserts",
+      "distance": "0.8 mi",
+      "description": "A curated assortment of today's fresh baked pastries: flaky butter croissants, pain au chocolat, almond bear claws, and fruit danishes."
+    },
+    {
+      "id": 7,
+      "name": "Superfood Salmon Bowl",
+      "restaurant": "The Fresh Table",
+      "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuAYHPTMnggVobMnOedMKjmDFsVs7hqNtr2bCdG7on-am2L9ExYG57ctyETmr0HIUAX_yNItvZdF3ug10auisI30bWmgXMyxQFr8Td4_IpiO7akGbcGlHK8mwo0qCqZD2pEViftuX86n6IDMzi-948LN3wOJ8ZJzLQAzNckWPpTzJdCkgFgfOTBuw-e6PKMSRp7gVzRB32swBHlFjPU-jyyoDoHMay2Wy1YUhClH63NKHVrGtpaKcbGwmI18MiDBGeBEUlv7PVik8XM",
+      "status": "Active",
+      "statusColor": "#1b6d24",
+      "statusBg": "#a3f69c",
+      "originalPrice": 24,
+      "rescuePrice": 9,
+      "discount": 62,
+      "expiresIn": "High Impact",
+      "qty": 3,
+      "category": "Bowls",
+      "distance": "2.5 mi",
+      "description": "Seared wild-caught salmon fillet resting on organic red quinoa, served with fresh avocados, snap peas, shredded carrots, microgreens, and honey ginger sauce."
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord_731232",
+      "customerId": "u_1782403918417",
+      "customerName": "ao2r",
+      "items": [
+        {
+          "id": 6,
+          "name": "Pastry Surprise Box",
+          "restaurant": "L'Artisan Boulangerie",
+          "originalPrice": 18,
+          "rescuePrice": 4.5,
+          "quantity": 1
+        }
+      ],
+      "totalAmount": 4.5,
+      "deliveryInfo": {
+        "name": "ao2r",
+        "phone": "01080834575",
+        "email": "wdad@gmail.com",
+        "address": "Cairo, Maadi"
+      },
+      "paymentMethod": "Paymob Card",
+      "status": "Pending Payment",
+      "timestamp": "2026-06-26T13:11:21.115Z",
+      "paymobOrderId": 553710536
+    }
+  ]
+}
