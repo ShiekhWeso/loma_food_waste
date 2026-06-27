@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API_URL from "../api";
 
 export default function HistoryDashboard({ user }) {
   const [orders, setOrders] = useState([]);
@@ -18,7 +19,7 @@ export default function HistoryDashboard({ user }) {
         ? `restaurant=${encodeURIComponent(user.name)}`
         : `customerId=${user.id}`;
         
-      const res = await fetch(`http://localhost:5000/api/orders?${queryParam}`);
+      const res = await fetch(`${API_URL}/api/orders?${queryParam}`);
       const data = await res.json();
       setOrders(data);
     } catch (err) {

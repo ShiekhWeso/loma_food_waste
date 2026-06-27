@@ -12,6 +12,7 @@ import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
 import LocationPickerModal from "./components/LocationPickerModal";
+import API_URL from "./api";
 
 
 export default function App() {
@@ -84,7 +85,7 @@ export default function App() {
 
       if (pendingOrderId) {
         if (isSuccess && !isPending) {
-          fetch(`http://localhost:5000/api/orders/${pendingOrderId}`)
+          fetch(`${API_URL}/api/orders/${pendingOrderId}`)
             .then(res => res.json())
             .then(orderData => {
               if (orderData && orderData.status !== "Payment Failed") {
@@ -122,7 +123,7 @@ export default function App() {
 
   const fetchMeals = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/meals");
+      const res = await fetch(`${API_URL}/api/meals`);
       if (res.ok) {
         const data = await res.json();
         setMeals(data);
@@ -315,7 +316,7 @@ export default function App() {
               <button
                 onClick={async () => {
                   try {
-                    const res = await fetch("http://localhost:5000/api/paymob/simulate-success", {
+                    const res = await fetch(`${API_URL}/api/paymob/simulate-success`, {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ orderId: mockPaymentData.orderId })

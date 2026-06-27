@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
+import API_URL from "../api";
 
 
 export default function Login({ onLogin, onNavigate }) {
@@ -15,7 +16,7 @@ export default function Login({ onLogin, onNavigate }) {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })

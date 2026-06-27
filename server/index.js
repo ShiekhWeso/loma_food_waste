@@ -60,7 +60,7 @@ if (!fs.existsSync(DB_PATH)) {
 
 // Signup Endpoint
 app.post("/api/auth/signup", (req, res) => {
-  const { email, password, name, role, locationAddress, locationCoords } = req.body;
+  const { email, password, name, contactName, role, locationAddress, locationCoords } = req.body;
   
   if (!email || !password || !name || !role) {
     return res.status(400).json({ message: "Missing required fields" });
@@ -78,6 +78,7 @@ app.post("/api/auth/signup", (req, res) => {
     email,
     password, // In a real production app, encrypt this with bcrypt!
     name,
+    contactName: contactName || "",
     role,
     locationAddress: locationAddress || "Cairo, Maadi",
     locationCoords: locationCoords || { lat: 30.0444, lng: 31.2357 }

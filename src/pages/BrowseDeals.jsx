@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../api";
 
 export default function BrowseDeals({ 
   onSelectMeal, 
@@ -27,7 +28,7 @@ export default function BrowseDeals({
       const queryParams = locationCoords && locationCoords.lat && locationCoords.lng
         ? `?lat=${locationCoords.lat}&lng=${locationCoords.lng}`
         : "";
-      const res = await fetch(`http://localhost:5000/api/meals${queryParams}`);
+      const res = await fetch(`${API_URL}/api/meals${queryParams}`);
       const data = await res.json();
       setMeals(data);
     } catch (err) {

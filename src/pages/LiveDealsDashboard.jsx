@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API_URL from "../api";
 
 export default function LiveDealsDashboard({ user, onRefreshMeals }) {
   const [meals, setMeals] = useState([]);
@@ -7,7 +8,7 @@ export default function LiveDealsDashboard({ user, onRefreshMeals }) {
   const fetchMeals = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/meals");
+      const res = await fetch(`${API_URL}/api/meals`);
       const data = await res.json();
       // Filter by current restaurant name
       const filtered = data.filter(m => m.restaurant === (user ? user.name : "The Conscious Kitchen"));
@@ -27,7 +28,7 @@ export default function LiveDealsDashboard({ user, onRefreshMeals }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to end this rescue deal?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/meals/${id}`, {
+      const res = await fetch(`${API_URL}/api/meals/${id}`, {
         method: "DELETE"
       });
       if (res.ok) {

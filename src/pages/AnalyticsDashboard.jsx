@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API_URL from "../api";
 
 export default function AnalyticsDashboard({ user }) {
   const [revenue, setRevenue] = useState(0);
@@ -18,11 +19,11 @@ export default function AnalyticsDashboard({ user }) {
       setLoading(true);
       
       // Fetch orders
-      const resOrders = await fetch(`http://localhost:5000/api/orders?restaurant=${encodeURIComponent(user.name)}`);
+      const resOrders = await fetch(`${API_URL}/api/orders?restaurant=${encodeURIComponent(user.name)}`);
       const orders = await resOrders.json();
       
       // Fetch meals
-      const resMeals = await fetch("http://localhost:5000/api/meals");
+      const resMeals = await fetch(`${API_URL}/api/meals`);
       const meals = await resMeals.json();
       const myMeals = meals.filter(m => m.restaurant === user.name);
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import LocationPickerModal from "../components/LocationPickerModal";
+import API_URL from "../api";
 
 
 
@@ -28,11 +29,12 @@ export default function SignUpPartner({ onLogin, onNavigate }) {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
+      const response = await fetch(`${API_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          name: kitchenName, 
+          name: kitchenName,
+          contactName,
           email, 
           password, 
           role: "restaurant",

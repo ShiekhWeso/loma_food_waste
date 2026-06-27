@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import API_URL from "../api";
 
 export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }) {
   const [name, setName] = useState(user ? user.name : "");
@@ -38,7 +39,7 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }
         deliveryInfo: { name, phone, email, address: "Cairo, Maadi" }
       };
 
-      const response = await fetch("http://localhost:5000/api/paymob/initiate-payment", {
+      const response = await fetch(`${API_URL}/api/paymob/initiate-payment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderBody)
