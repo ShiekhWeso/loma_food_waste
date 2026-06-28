@@ -16,7 +16,24 @@ import API_URL from "./api";
 
 
 export default function App() {
-  const [activePage, setActivePage] = useState("landing");
+  const [activePage, setActivePage] = useState(() => {
+    return window.history.state?.page || "landing";
+  });
+  const navigateTo = (page) => {
+    window.history.pushState({ page }, "", `#${page}`);
+    setActivePage(page);
+  };
+  
+  useEffect(() => {
+    window.history.replaceState({page: "landing"}, "", "#landing");
+    const handlePopState = (e) => {
+      const page = e.state?.page || "landing";
+      setActivePage(page);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState)
+  }, [])
+
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("loma_user");
     return saved ? JSON.parse(saved) : null;
@@ -197,15 +214,15 @@ export default function App() {
   const renderPage = () => {
     switch (activePage) {
       case "landing":
-        return <LandingPage onNavigate={setActivePage} />;
+        return <LandingPage onNavigate={navigateTo} onSelectMeal={setSelectedMeal} />;
       case "login":
-        return <Login onLogin={handleLogin} onNavigate={setActivePage} />;
+        return <Login onLogin={handleLogin} onNavigate={navigateTo} />;
       case "signup-choose":
-        return <SignUpChooseRole onNavigate={setActivePage} />;
+        return <SignUpChooseRole onNavigate={navigateTo} />;
       case "signup-customer":
-        return <SignUpCustomer onLogin={handleLogin} onNavigate={setActivePage} />;
+        return <SignUpCustomer onLogin={handleLogin} onNavigate={navigateTo} />;
       case "signup-partner":
-        return <SignUpPartner onLogin={handleLogin} onNavigate={setActivePage} />;
+        return <SignUpPartner onLogin={handleLogin} onNavigate={navigateTo} />;
       case "browse-deals":
         return (
           <BrowseDeals 
@@ -222,22 +239,22 @@ export default function App() {
             cartItems={cartItems} 
             user={user} 
             onOrderSuccess={handleOrderSuccess}
-            onNavigate={setActivePage}
+            onNavigate={navigateTo}
           />
         );
       case "order-confirmation":
-        return <OrderConfirmation order={lastOrder} onNavigate={setActivePage} />;
+        return <OrderConfirmation order={lastOrder} onNavigate={navigateTo} />;
       case "restaurant-dashboard":
         return (
           <RestaurantDashboard 
             user={user} 
-            onNavigate={setActivePage} 
+            onNavigate={navigateTo} 
             onLogout={handleLogout} 
             onRefreshMeals={fetchMeals}
           />
         );
       default:
-        return <LandingPage onNavigate={setActivePage} />;
+        return <LandingPage onNavigate={navigateTo} />;
     }
   };
 
@@ -251,7 +268,7 @@ export default function App() {
         <TopNavBar
           user={user}
           activePage={activePage}
-          onNavigate={setActivePage}
+          onNavigate={navigateTo}
           onToggleCart={() => setCartOpen(true)}
           cartCount={cartCount}
           onLogout={handleLogout}
