@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function LandingPage({ onNavigate }) {
+export default function LandingPage({ onNavigate, onSelectMeal }) {
   const featuredDeals = [
     {
       id: 4,
@@ -216,7 +216,7 @@ export default function LandingPage({ onNavigate }) {
             {featuredDeals.map((deal) => (
               <div 
                 key={deal.id} 
-                onClick={() => onNavigate("browse-deals")}
+                onClick={() => onSelectMeal(deal)}
                 className="group cursor-pointer text-left"
               >
                 <div className="relative rounded-3xl overflow-hidden mb-6 aspect-square bg-surface-dim">
