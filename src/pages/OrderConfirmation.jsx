@@ -38,15 +38,20 @@ export default function OrderConfirmation({ order, onNavigate }) {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   const co2Saved = (order.items.reduce((acc, item) => acc + item.quantity, 0) * 2.5).toFixed(1);
+  const totalSavings = order.items.reduce((acc, item) => acc + ((item.originalPrice || item.rescuePrice * 2) - item.rescuePrice) * item.quantity, 0);
 
   return (
-    <div className="bg-background text-on-background min-h-[calc(100vh-80px)] flex flex-col items-center justify-center p-4 sm:p-8 font-body">
-      <main className="w-full max-w-2xl mx-auto flex flex-col items-center gap-8 pt-20">
+    <div className="bg-background text-on-background min-h-screen flex flex-col items-center justify-center p-4 sm:p-8 font-body print:p-0">
+      <main className="w-full max-w-2xl mx-auto flex flex-col items-center gap-8 pt-20 print:pt-0">
         
         {/* Success Header */}
-        <div className="flex flex-col items-center text-center gap-4">
-          <div className="w-20 h-20 bg-secondary-container rounded-full flex items-center justify-center mb-2 shadow-[0_8px_32px_rgba(27,109,36,0.15)]">
+        <div className="flex flex-col items-center text-center gap-4 print:hidden">
+          <div className="w-20 h-20 bg-secondary-container rounded-full flex items-center justify-center mb-2 shadow-[0_8px_32px_rgba(27,109,36,0.15)] animate-check">
             <span className="material-symbols-outlined text-on-secondary-container text-4xl fill">check_circle</span>
           </div>
           <h1 className="font-headline text-4xl sm:text-5xl font-bold tracking-tight text-on-background">Order Rescued!</h1>
@@ -56,10 +61,10 @@ export default function OrderConfirmation({ order, onNavigate }) {
         </div>
 
         {/* Receipt Card */}
-        <div className="w-full bg-surface-container-lowest rounded-[2rem] p-6 sm:p-10 shadow-[0_8px_32px_rgba(176,46,0,0.04)] flex flex-col gap-8 relative overflow-hidden border border-outline-variant/10">
+        <div className="w-full bg-surface-container-lowest rounded-[2rem] p-6 sm:p-10 shadow-[0_8px_32px_rgba(176,46,0,0.04)] flex flex-col gap-8 relative overflow-hidden border border-outline-variant/10 print:border-none print:shadow-none">
           
           {/* Decorative Top Border */}
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary to-primary-container" />
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary to-primary-container print:hidden" />
 
           {/* Order Info Header */}
           <div className="flex justify-between items-center pb-6 border-b-2 border-surface-container-low border-dashed text-left">
@@ -74,7 +79,7 @@ export default function OrderConfirmation({ order, onNavigate }) {
           </div>
 
           {/* Pickup Countdown Timer */}
-          <div className="bg-tertiary-fixed text-on-tertiary-fixed p-6 rounded-2xl flex flex-col items-center justify-center gap-1 border border-tertiary/10">
+          <div className="bg-tertiary-fixed text-on-tertiary-fixed p-6 rounded-2xl flex flex-col items-center justify-center gap-1 border border-tertiary/10 print:hidden">
             <span className="material-symbols-outlined text-3xl mb-1 text-tertiary">alarm</span>
             <span className="text-4xl font-headline font-extrabold tracking-widest">{formatTime(timeLeft)}</span>
             <span className="text-xs font-bold uppercase tracking-wider">Remaining for pickup</span>
@@ -106,6 +111,24 @@ export default function OrderConfirmation({ order, onNavigate }) {
             </div>
           </div>
 
+          {/* Savings Callout */}
+          <div className="bg-primary/5 p-4 rounded-xl text-left border border-primary/15 flex justify-between items-center">
+            <div>
+              <p className="text-xs font-bold text-primary">Your Rescue Savings</p>
+              <p className="text-[10px] text-on-surface-variant">Saved by rescuing surplus instead of ordering fresh.</p>
+            </div>
+            <span className="text-xl font-headline font-extrabold text-primary">${totalSavings.toFixed(2)}</span>
+          </div>
+
+          {/* Delivery Address Summary */}
+          {order.deliveryInfo && (
+            <div className="text-left bg-surface-container-low p-5 rounded-2xl border border-outline-variant/10 text-xs">
+              <h3 className="font-bold text-on-surface uppercase tracking-wider mb-2">Delivery Details</h3>
+              <p className="font-semibold text-on-surface-variant">Name: {order.deliveryInfo.name}</p>
+              <p className="text-stone-400 mt-1">Address: {order.deliveryInfo.address}</p>
+            </div>
+          )}
+
           {/* Impact Stats */}
           <div className="bg-secondary-container/20 p-5 rounded-2xl flex items-center gap-4 border border-secondary/15 text-left">
             <span className="material-symbols-outlined text-secondary text-3xl fill">eco</span>
@@ -131,12 +154,19 @@ export default function OrderConfirmation({ order, onNavigate }) {
         </div>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center print:hidden">
           <button 
-            onClick={() => onNavigate("browse-deals")}
+            onClick={() => onNavigate("marketplace")}
             className="bg-primary text-white px-8 py-4 rounded-xl font-bold text-sm shadow-warm hover:opacity-90 active:scale-95 transition-all w-full sm:w-auto"
           >
             Go to Browse Deals
+          </button>
+          <button 
+            onClick={handlePrint}
+            className="bg-secondary text-white px-8 py-4 rounded-xl font-bold text-sm hover:opacity-90 active:scale-95 transition-all w-full sm:w-auto flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined text-sm">download</span>
+            <span>Download Invoice</span>
           </button>
           <button 
             onClick={() => onNavigate("landing")}

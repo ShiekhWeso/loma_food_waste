@@ -21,24 +21,23 @@ export default function MealDetailsModal({ meal, isOpen, onClose, onAddToCart })
       />
 
       {/* Modal Container */}
-      <div className="relative bg-background max-w-4xl w-full rounded-[2.5rem] shadow-2xl overflow-hidden z-10 flex flex-col md:flex-row border border-outline-variant/15 font-body">
+      <div className="relative bg-background max-w-4xl w-full rounded-[2.5rem] shadow-2xl overflow-hidden z-10 flex flex-col md:flex-row border border-outline-variant/15 font-body text-left">
         
         {/* Left: Image & Badge */}
-        <div className="md:w-1/2 relative h-64 md:h-auto min-h-[320px] bg-surface-dim">
+        <div className="md:w-1/2 relative h-64 md:h-auto min-h-[360px] bg-surface-dim">
           <img 
             src={meal.img} 
             alt={meal.name} 
             className="w-full h-full object-cover"
           />
           {/* Floating Urgency / Impact Badges */}
-          <div className="absolute top-6 left-6 flex flex-col gap-3 z-10">
-            <div className="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full flex items-center gap-2 font-bold text-xs shadow-lg">
-              <span className="material-symbols-outlined text-[16px]">verified</span>
-              <span>Prepared freshly</span>
+          <div className="absolute top-6 left-6 flex flex-col gap-2 z-10">
+            <div className="bg-primary text-white font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-lg">
+              -{discountVal}% Off
             </div>
-            <div className="bg-tertiary-fixed text-on-tertiary-fixed px-4 py-2 rounded-full flex items-center gap-2 font-bold text-xs shadow-lg">
-              <span className="material-symbols-outlined text-[16px]">timer</span>
-              <span>Expires in {meal.expiresIn || "45m"}</span>
+            <div className="bg-secondary-container text-on-secondary-container px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 font-bold text-xs shadow-lg">
+              <span className="material-symbols-outlined text-sm">verified</span>
+              <span>Freshly Prepared</span>
             </div>
           </div>
         </div>
@@ -46,13 +45,11 @@ export default function MealDetailsModal({ meal, isOpen, onClose, onAddToCart })
         {/* Right: Meal details & Checkout actions */}
         <div className="md:w-1/2 p-8 flex flex-col justify-between">
           <div>
-            {/* Close Button */}
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <span className="text-xs font-bold text-secondary uppercase tracking-widest bg-secondary-container/20 px-3 py-1 rounded-full">
-                  {meal.category || "Gourmet"}
-                </span>
-              </div>
+            {/* Header / Category & Close */}
+            <div className="flex justify-between items-start mb-3">
+              <span className="text-xs font-bold text-secondary uppercase tracking-widest bg-secondary-container/20 px-3 py-1 rounded-full">
+                {meal.category || "Gourmet"}
+              </span>
               <button 
                 onClick={onClose}
                 className="p-2 hover:bg-surface-container-highest rounded-full transition-colors flex items-center justify-center -mt-2 -mr-2"
@@ -61,41 +58,58 @@ export default function MealDetailsModal({ meal, isOpen, onClose, onAddToCart })
               </button>
             </div>
 
-            {/* Title & Restaurant */}
-            <h2 className="text-3xl font-headline font-extrabold text-on-surface tracking-tight mb-2">
+            {/* Meal Name (Bold & Prominent) */}
+            <h2 className="text-3xl font-headline font-extrabold text-on-surface tracking-tight mb-3">
               {meal.name}
             </h2>
-            <p className="text-sm font-semibold text-primary mb-6 flex items-center gap-1">
-              <span className="material-symbols-outlined text-base">storefront</span>
-              {meal.restaurant} • <span className="text-stone-400">{meal.distance || "0.4 mi"}</span>
-            </p>
 
-            {/* Description */}
-            <p className="text-on-surface-variant text-sm leading-relaxed mb-6">
-              {meal.description || "Indulge in a premium surplus culinary creation. Prepared with high-end artisan ingredients and saved from going to waste."}
-            </p>
+            {/* Vertical Information Hierarchy Stack */}
+            <div className="space-y-2 mb-6 text-sm font-semibold">
+              {/* Restaurant Name */}
+              <div className="flex items-center gap-2 text-primary font-bold">
+                <span className="material-symbols-outlined text-lg">storefront</span>
+                <span>{meal.restaurant}</span>
+              </div>
 
-            {/* Sustainability Impact */}
-            <div className="bg-surface-container-low p-4 rounded-2xl mb-8 flex items-center gap-3 border border-outline-variant/10">
-              <span className="material-symbols-outlined text-secondary text-2xl fill">eco</span>
-              <div>
-                <h5 className="font-bold text-xs text-on-surface">Sustainable Choice</h5>
-                <p className="text-[11px] text-stone-500">Rescuing this single meal prevents 2.5 kg of CO2 equivalent emissions!</p>
+              {/* Reason for Return */}
+              <div className="flex items-center gap-2 text-stone-600">
+                <span className="material-symbols-outlined text-lg text-primary/70">info</span>
+                <span>Reason for Return: <strong className="text-on-surface">{meal.returnReason || "Cancellation"}</strong></span>
+              </div>
+
+              {/* Expiration Time */}
+              <div className="flex items-center gap-2 text-stone-600">
+                <span className="material-symbols-outlined text-lg text-tertiary">schedule</span>
+                <span>Expiration Time: <strong className="text-on-surface">{meal.expiresIn || "2 hrs"}</strong></span>
+              </div>
+
+              {/* Availability & Distance */}
+              <div className="flex items-center gap-4 text-xs text-stone-400 pt-1">
+                <span className="flex items-center gap-1">
+                  <span className="material-symbols-outlined text-sm">inventory_2</span>
+                  <span>{meal.qty} available</span>
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="material-symbols-outlined text-sm">near_me</span>
+                  <span>{meal.distance || "0.8 mi away"}</span>
+                </span>
               </div>
             </div>
+
+            {/* Description */}
+            <p className="text-on-surface-variant text-xs leading-relaxed mb-6 bg-surface-container-low/50 p-3.5 rounded-xl border border-outline-variant/10">
+              {meal.description || "Indulge in a premium surplus culinary creation. Prepared with high-end artisan ingredients and saved from going to waste."}
+            </p>
           </div>
 
           {/* Pricing & Add to Cart */}
-          <div className="border-t border-outline-variant/20 pt-6">
-            <div className="flex justify-between items-end mb-6">
+          <div className="border-t border-outline-variant/20 pt-5">
+            <div className="flex justify-between items-end mb-5">
               <div>
-                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Rescue Price</p>
-                <div className="flex items-center gap-3">
+                <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Rescue Price</p>
+                <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-headline font-extrabold text-primary">${meal.rescuePrice.toFixed(2)}</span>
-                  <span className="text-sm text-on-surface-variant line-through font-medium">${meal.originalPrice.toFixed(2)}</span>
-                  <span className="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-md">
-                    {discountVal}% Off
-                  </span>
+                  <span className="text-sm text-stone-400 line-through font-medium">${meal.originalPrice.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -126,9 +140,9 @@ export default function MealDetailsModal({ meal, isOpen, onClose, onAddToCart })
             {meal.qty > 0 ? (
               <button 
                 onClick={handleAdd}
-                className="w-full bg-gradient-to-r from-primary to-primary-container text-white py-4 rounded-2xl font-headline font-bold text-base shadow-warm hover:opacity-95 active:scale-95 transition-all duration-150 flex items-center justify-center gap-2"
+                className="w-full bg-primary text-white py-4 rounded-2xl font-headline font-bold text-base shadow-warm hover:bg-primary-container active:scale-95 transition-all duration-150 flex items-center justify-center gap-2"
               >
-                <span className="material-symbols-outlined text-sm">shopping_cart</span>
+                <span className="material-symbols-outlined text-sm">add_shopping_cart</span>
                 Add {qty} to Rescue Cart
               </button>
             ) : (

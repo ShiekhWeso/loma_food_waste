@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
-import API_URL from "../api";
-
+import Logo from "../components/Logo";
 
 export default function SignUpCustomer({ onLogin, onNavigate }) {
   const [name, setName] = useState("");
@@ -23,7 +22,7 @@ export default function SignUpCustomer({ onLogin, onNavigate }) {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/signup`, {
+      const response = await fetch("http://localhost:5000/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, role: "customer" })
@@ -44,14 +43,14 @@ export default function SignUpCustomer({ onLogin, onNavigate }) {
   };
 
   return (
-    <div className="flex-grow flex items-center justify-center px-4 py-12 relative overflow-hidden min-h-[calc(100vh-150px)]">
+    <div className="flex-grow flex items-center justify-center px-4 pt-28 pb-12 relative overflow-hidden min-h-screen">
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-surface-container-high rounded-full blur-3xl opacity-50 pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-secondary-container/20 rounded-full blur-3xl opacity-40 pointer-events-none" />
 
       <div className="w-full max-w-md z-10">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold tracking-tight text-primary font-headline">Lo’ma</h1>
-          <p className="text-on-surface-variant font-body mt-2">Create Customer Account</p>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <Logo size="lg" className="mb-2" />
+          <p className="text-on-surface-variant font-body">Create Customer Account</p>
         </div>
 
         <div className="bg-surface-container-lowest rounded-[2rem] shadow-2xl shadow-primary/5 overflow-hidden transition-all duration-300 border border-outline-variant/10">

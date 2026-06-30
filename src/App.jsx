@@ -12,28 +12,21 @@ import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
 import LocationPickerModal from "./components/LocationPickerModal";
-import API_URL from "./api";
+
+// Import New Customer Pages
+import CustomerHome from "./pages/CustomerHome";
+import ProfilePage from "./pages/ProfilePage";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
+
+// Import Toast Notification components
+import ToastContainer from "./components/ToastContainer";
+import AIAssistant from "./components/AIAssistant";
+import Footer from "./components/Footer";
 
 
 export default function App() {
-  const [activePage, setActivePage] = useState(() => {
-    return window.history.state?.page || "landing";
-  });
-  const navigateTo = (page) => {
-    window.history.pushState({ page }, "", `#${page}`);
-    setActivePage(page);
-  };
-  
-  useEffect(() => {
-    window.history.replaceState({page: "landing"}, "", "#landing");
-    const handlePopState = (e) => {
-      const page = e.state?.page || "landing";
-      setActivePage(page);
-    };
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState)
-  }, [])
-
+  const [activePage, setActivePage] = useState("landing");
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("loma_user");
     return saved ? JSON.parse(saved) : null;
@@ -75,6 +68,18 @@ export default function App() {
     return null;
   });
 
+  // Global Toast Notifications State
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = ({ type, title, message, duration }) => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, type, title, message, duration }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
   // Sync state with localStorage
   useEffect(() => {
     if (user) {
@@ -102,16 +107,25 @@ export default function App() {
 
       if (pendingOrderId) {
         if (isSuccess && !isPending) {
-          fetch(`${API_URL}/api/orders/${pendingOrderId}`)
+          fetch(`http://localhost:5000/api/orders/${pendingOrderId}`)
             .then(res => res.json())
             .then(orderData => {
               if (orderData && orderData.status !== "Payment Failed") {
                 setLastOrder(orderData);
                 setCartItems([]);
                 localStorage.removeItem("loma_cart");
+                addToast({
+                  type: "success",
+                  title: "Payment Successful",
+                  message: "Your rescue order has been logged!"
+                });
                 setActivePage("order-confirmation");
               } else {
-                alert("Payment validation failed. Please contact support.");
+                addToast({
+                  type: "error",
+                  title: "Payment Failed",
+                  message: "Verification failed. Please contact support."
+                });
                 setActivePage("checkout");
               }
             })
@@ -124,7 +138,11 @@ export default function App() {
               window.history.replaceState({}, document.title, window.location.pathname);
             });
         } else {
-          alert("Payment failed or cancelled. Please try again.");
+          addToast({
+            type: "error",
+            title: "Payment Cancelled",
+            message: "The transaction was failed or cancelled."
+          });
           localStorage.removeItem("loma_pending_order_id");
           setActivePage("checkout");
           window.history.replaceState({}, document.title, window.location.pathname);
@@ -140,7 +158,7 @@ export default function App() {
 
   const fetchMeals = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/meals`);
+      const res = await fetch("http://localhost:5000/api/meals");
       if (res.ok) {
         const data = await res.json();
         setMeals(data);
@@ -152,21 +170,27 @@ export default function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
+    addToast({
+      type: "success",
+      title: "Welcome Back",
+      message: `Successfully logged in as ${userData.name}.`
+    });
+
     if (userData.role === "restaurant") {
       setActivePage("restaurant-dashboard");
     } else {
-      // If customer logged in with items in cart, proceed to checkout; else browse
-      if (cartItems.length > 0) {
-        setActivePage("checkout");
-      } else {
-        setActivePage("browse-deals");
-      }
+      setActivePage("customer-home");
     }
   };
 
   const handleLogout = () => {
     setUser(null);
     setCartItems([]);
+    addToast({
+      type: "info",
+      title: "Logged Out",
+      message: "You have been securely logged out."
+    });
     setActivePage("landing");
   };
 
@@ -181,7 +205,7 @@ export default function App() {
         return [...prevItems, { ...meal, quantity: qty }];
       }
     });
-    setCartOpen(true); // show cart drawer feedback
+    // Removed automatic cart sidebar opening: only trigger toast notification!
   };
 
   const handleUpdateCartQty = (itemId, qty) => {
@@ -197,7 +221,6 @@ export default function App() {
   const handleProceedToCheckout = () => {
     setCartOpen(false);
     if (!user) {
-      // Prompt login first, checkout next
       setActivePage("login");
     } else {
       setActivePage("checkout");
@@ -210,19 +233,39 @@ export default function App() {
     setActivePage("order-confirmation");
   };
 
+  // Route isolation / navigation redirects protection helper
+  useEffect(() => {
+    if (user) {
+      if (user.role === "restaurant" && 
+          ["landing", "customer-home", "marketplace", "about", "contact", "profile", "checkout"].includes(activePage)) {
+        setActivePage("restaurant-dashboard");
+      }
+      if (user.role === "customer" && activePage === "restaurant-dashboard") {
+        setActivePage("customer-home");
+      }
+    } else {
+      if (["customer-home", "marketplace", "profile", "restaurant-dashboard"].includes(activePage)) {
+        setActivePage("landing");
+      }
+    }
+  }, [user, activePage]);
+
   // Switch views
   const renderPage = () => {
     switch (activePage) {
       case "landing":
-        return <LandingPage onNavigate={navigateTo} onSelectMeal={setSelectedMeal} />;
-      case "login":
-        return <Login onLogin={handleLogin} onNavigate={navigateTo} />;
-      case "signup-choose":
-        return <SignUpChooseRole onNavigate={navigateTo} />;
-      case "signup-customer":
-        return <SignUpCustomer onLogin={handleLogin} onNavigate={navigateTo} />;
-      case "signup-partner":
-        return <SignUpPartner onLogin={handleLogin} onNavigate={navigateTo} />;
+        return <LandingPage onNavigate={setActivePage} />;
+      case "customer-home":
+        return (
+          <CustomerHome 
+            user={user} 
+            meals={meals} 
+            onNavigate={setActivePage} 
+            onAddToCart={handleAddToCart}
+            addToast={addToast}
+          />
+        );
+      case "marketplace":
       case "browse-deals":
         return (
           <BrowseDeals 
@@ -231,34 +274,57 @@ export default function App() {
             onAddToCart={handleAddToCart}
             locationAddress={locationAddress}
             onOpenLocationPicker={() => setLocationPickerOpen(true)}
+            isAuthenticated={!!user}
+            addToast={addToast}
           />
         );
+      case "about":
+        return <AboutPage />;
+      case "contact":
+        return <ContactPage addToast={addToast} />;
+      case "profile":
+        return (
+          <ProfilePage 
+            user={user} 
+            onLogout={handleLogout} 
+            onNavigate={setActivePage}
+            addToast={addToast}
+          />
+        );
+      case "login":
+        return <Login onLogin={handleLogin} onNavigate={setActivePage} />;
+      case "signup-choose":
+        return <SignUpChooseRole onNavigate={setActivePage} />;
+      case "signup-customer":
+        return <SignUpCustomer onLogin={handleLogin} onNavigate={setActivePage} />;
+      case "signup-partner":
+        return <SignUpPartner onLogin={handleLogin} onNavigate={setActivePage} />;
       case "checkout":
         return (
           <Checkout 
             cartItems={cartItems} 
             user={user} 
             onOrderSuccess={handleOrderSuccess}
-            onNavigate={navigateTo}
+            onNavigate={setActivePage}
+            addToast={addToast}
           />
         );
       case "order-confirmation":
-        return <OrderConfirmation order={lastOrder} onNavigate={navigateTo} />;
+        return <OrderConfirmation order={lastOrder} onNavigate={setActivePage} />;
       case "restaurant-dashboard":
         return (
           <RestaurantDashboard 
             user={user} 
-            onNavigate={navigateTo} 
+            onNavigate={setActivePage} 
             onLogout={handleLogout} 
             onRefreshMeals={fetchMeals}
           />
         );
       default:
-        return <LandingPage onNavigate={navigateTo} />;
+        return <LandingPage onNavigate={setActivePage} />;
     }
   };
 
-  // Determine if header is visible
   const showHeader = activePage !== "restaurant-dashboard";
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -268,7 +334,13 @@ export default function App() {
         <TopNavBar
           user={user}
           activePage={activePage}
-          onNavigate={navigateTo}
+          onNavigate={(target) => {
+            if (target === "cart-open") {
+              setCartOpen(true);
+            } else {
+              setActivePage(target);
+            }
+          }}
           onToggleCart={() => setCartOpen(true)}
           cartCount={cartCount}
           onLogout={handleLogout}
@@ -281,6 +353,29 @@ export default function App() {
       <div className="flex-grow">
         {renderPage()}
       </div>
+
+      {/* Premium Footer: Authenticated customers only, never on dashboard */}
+      {user && user.role !== "restaurant" && activePage !== "restaurant-dashboard" && (
+        <Footer onNavigate={setActivePage} />
+      )}
+
+      {/* Toast Notification Popups */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+
+      {/* AI Assistant Chatbot: Only loaded/visible for authenticated customers */}
+      {user && user.role === "customer" && (
+        <AIAssistant 
+          user={user} 
+          meals={meals} 
+          onNavigate={(target) => {
+            if (target === "cart-open") {
+              setCartOpen(true);
+            } else {
+              setActivePage(target);
+            }
+          }}
+        />
+      )}
 
       {/* Shared Overlays */}
       <CartSidebar
@@ -333,7 +428,7 @@ export default function App() {
               <button
                 onClick={async () => {
                   try {
-                    const res = await fetch(`${API_URL}/api/paymob/simulate-success`, {
+                    const res = await fetch("http://localhost:5000/api/paymob/simulate-success", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ orderId: mockPaymentData.orderId })

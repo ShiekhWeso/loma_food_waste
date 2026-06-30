@@ -1,10 +1,17 @@
 import React, { useState } from "react";
-import API_URL from "../api";
 
-export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }) {
+export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate, addToast }) {
   const [name, setName] = useState(user ? user.name : "");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState(user ? user.email : "");
+  const [phone, setPhone] = useState(user?.phone || "");
+  const [email] = useState(user ? user.email : "");
+  
+  // Simplified Address Form Fields
+  const [address, setAddress] = useState(user?.address || "Cairo, Maadi");
+  const [building, setBuilding] = useState("");
+  const [floor, setFloor] = useState("");
+  const [apartment, setApartment] = useState("");
+  const [notes, setNotes] = useState("");
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -12,6 +19,32 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }
   const rescueTotal = cartItems.reduce((acc, item) => acc + (item.rescuePrice * item.quantity), 0);
   const totalSavings = originalTotal - rescueTotal;
   const co2Saved = (cartItems.reduce((acc, item) => acc + item.quantity, 0) * 2.5).toFixed(1);
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      if (addToast) addToast({ type: "error", title: "Unsupported", message: "Geolocation is not supported by your browser." });
+      return;
+    }
+    
+    if (addToast) addToast({ type: "info", title: "Locating", message: "Finding your current coordinates..." });
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setAddress(`Coordinates: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+        if (addToast) {
+          addToast({
+            type: "success",
+            title: "Location Detected",
+            message: `Position pinned: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
+          });
+        }
+      },
+      (err) => {
+        if (addToast) addToast({ type: "error", title: "Permission Denied", message: "Could not auto-detect location. Please type manually." });
+      }
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +57,8 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }
     setLoading(true);
 
     try {
+      const fullAddress = `${address}, Bldg: ${building}, Floor: ${floor}, Apt: ${apartment} ${notes ? `(${notes})` : ""}`;
+      
       const orderBody = {
         customerId: user ? user.id : "guest",
         customerName: name,
@@ -36,10 +71,15 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }
           quantity: item.quantity
         })),
         totalAmount: rescueTotal,
-        deliveryInfo: { name, phone, email, address: "Cairo, Maadi" }
+        deliveryInfo: { 
+          name, 
+          phone, 
+          email, 
+          address: fullAddress 
+        }
       };
 
-      const response = await fetch(`${API_URL}/api/paymob/initiate-payment`, {
+      const response = await fetch("http://localhost:5000/api/paymob/initiate-payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderBody)
@@ -51,19 +91,23 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }
         throw new Error(data.message || "Failed to initiate payment");
       }
 
-      // Save order ID so we can fetch it when returning from redirect
       localStorage.setItem("loma_pending_order_id", data.orderId);
-
-      // Redirect browser to Paymob portal (or mock sandbox simulator page)
       window.location.href = data.paymentUrl;
     } catch (err) {
       setError(err.message);
       setLoading(false);
+      if (addToast) {
+        addToast({
+          type: "error",
+          title: "Payment Error",
+          message: err.message
+        });
+      }
     }
   };
 
   return (
-    <main className="flex-grow pt-24 pb-32 px-4 md:px-8 max-w-screen-xl mx-auto w-full font-body text-left">
+    <main className="flex-grow pt-24 pb-32 px-4 md:px-8 max-w-screen-xl mx-auto w-full font-body text-left animate-page-in">
       <div className="mb-10">
         <h1 className="text-4xl md:text-5xl font-extrabold text-on-background tracking-tight mb-2 font-headline">Secure Checkout</h1>
         <p className="text-on-surface-variant font-body text-base">Complete your order to rescue these delicious meals.</p>
@@ -80,7 +124,7 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }
         
         {/* Left Column: Forms */}
         <div className="lg:col-span-7 flex flex-col gap-10">
-          <form onSubmit={handleSubmit} className="space-y-10">
+          <form onSubmit={handleSubmit} className="space-y-8">
             
             {/* Delivery/Pickup Info */}
             <section className="bg-surface-container-low rounded-[2rem] p-8 shadow-[0_4px_24px_rgba(176,46,0,0.02)] border border-outline-variant/10">
@@ -92,10 +136,10 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block ml-2" htmlFor="fullName">Full Name</label>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block ml-2" htmlFor="fullName">Recipient Name</label>
                   <input 
-                    className="w-full bg-surface-bright border-none rounded-xl px-5 py-4 text-on-background placeholder:text-outline focus:ring-2 focus:ring-primary focus:bg-surface-container-highest transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.02)] text-sm font-semibold" 
+                    className="w-full bg-surface-bright border-none rounded-xl px-5 py-4 text-on-background placeholder:text-outline focus:ring-2 focus:ring-primary focus:bg-surface-container-highest transition-all duration-300 text-sm font-semibold" 
                     id="fullName" 
                     placeholder="Jane Doe" 
                     value={name}
@@ -104,10 +148,11 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }
                     type="text"
                   />
                 </div>
+                
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block ml-2" htmlFor="phone">Phone Number</label>
                   <input 
-                    className="w-full bg-surface-bright border-none rounded-xl px-5 py-4 text-on-background placeholder:text-outline focus:ring-2 focus:ring-primary focus:bg-surface-container-highest transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.02)] text-sm font-semibold" 
+                    className="w-full bg-surface-bright border-none rounded-xl px-5 py-4 text-on-background placeholder:text-outline focus:ring-2 focus:ring-primary focus:bg-surface-container-highest transition-all duration-300 text-sm font-semibold" 
                     id="phone" 
                     placeholder="+20 100 000 0000" 
                     value={phone}
@@ -116,16 +161,74 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }
                     type="tel"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block ml-2" htmlFor="email">Email Address</label>
+
+                <div className="md:col-span-2 space-y-2">
+                  <div className="flex justify-between items-center ml-2">
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block" htmlFor="address">Delivery Address</label>
+                    <button
+                      type="button"
+                      onClick={detectLocation}
+                      className="text-xs text-primary font-bold hover:underline flex items-center gap-1"
+                    >
+                      <span className="material-symbols-outlined text-xs">my_location</span>
+                      <span>Pin GPS Location</span>
+                    </button>
+                  </div>
                   <input 
-                    className="w-full bg-surface-bright border-none rounded-xl px-5 py-4 text-on-background placeholder:text-outline focus:ring-2 focus:ring-primary focus:bg-surface-container-highest transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.02)] text-sm font-semibold" 
-                    id="email" 
-                    placeholder="jane@example.com" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-surface-bright border-none rounded-xl px-5 py-4 text-on-background placeholder:text-outline focus:ring-2 focus:ring-primary focus:bg-surface-container-highest transition-all duration-300 text-sm font-semibold" 
+                    id="address" 
+                    placeholder="Street, District, Cairo" 
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                     required
-                    type="email"
+                    type="text"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block ml-2" htmlFor="building">Building / Villa</label>
+                  <input 
+                    className="w-full bg-surface-bright border-none rounded-xl px-5 py-3 text-on-background focus:ring-2 focus:ring-primary text-sm font-semibold" 
+                    id="building" 
+                    placeholder="Bldg 4" 
+                    value={building}
+                    onChange={(e) => setBuilding(e.target.value)}
+                    required
+                    type="text"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block ml-2" htmlFor="floor">Floor / Apartment</label>
+                  <div className="flex gap-2">
+                    <input 
+                      className="w-1/2 bg-surface-bright border-none rounded-xl px-4 py-3 text-on-background focus:ring-2 focus:ring-primary text-sm font-semibold" 
+                      placeholder="Floor 3" 
+                      value={floor}
+                      onChange={(e) => setFloor(e.target.value)}
+                      required
+                      type="text"
+                    />
+                    <input 
+                      className="w-1/2 bg-surface-bright border-none rounded-xl px-4 py-3 text-on-background focus:ring-2 focus:ring-primary text-sm font-semibold" 
+                      placeholder="Apt 12" 
+                      value={apartment}
+                      onChange={(e) => setApartment(e.target.value)}
+                      required
+                      type="text"
+                    />
+                  </div>
+                </div>
+
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block ml-2" htmlFor="notes">Additional Delivery Instructions</label>
+                  <input 
+                    className="w-full bg-surface-bright border-none rounded-xl px-5 py-3.5 text-on-background placeholder:text-outline focus:ring-2 focus:ring-primary text-sm font-semibold" 
+                    id="notes" 
+                    placeholder="E.g., Leave with doorman, Ring bell on arrival..." 
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    type="text"
                   />
                 </div>
               </div>
@@ -159,9 +262,16 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate }
             <button 
               type="submit"
               disabled={loading || cartItems.length === 0}
-              className="w-full bg-gradient-to-r from-primary to-primary-container text-white py-5 rounded-[1.5rem] font-headline font-bold text-lg shadow-warm hover:opacity-95 transition-opacity disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-primary to-primary-container text-white py-5 rounded-[1.5rem] font-headline font-bold text-lg shadow-warm hover:opacity-95 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? "Redirecting to Paymob..." : `Pay securely with Paymob • $${rescueTotal.toFixed(2)}`}
+              {loading ? (
+                <>
+                  <span className="material-symbols-outlined animate-spin text-lg">sync</span>
+                  <span>Redirecting to Paymob...</span>
+                </>
+              ) : (
+                `Confirm and Pay • $${rescueTotal.toFixed(2)}`
+              )}
             </button>
           </form>
         </div>

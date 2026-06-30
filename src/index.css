@@ -22,7 +22,7 @@
 }
 
 .glass-nav {
-  background: rgba(246, 251, 237, 0.8);
+  background: rgba(246, 251, 237, 0.88);
   backdrop-filter: blur(20px);
 }
 
@@ -32,4 +32,119 @@
 
 .anti-grid-list > *:nth-child(even) {
   background-color: #f0f6e8;
+}
+
+/* ── Page fade-in ─────────────────────────────── */
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-page-in {
+  animation: pageFadeIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Counter animation ────────────────────────── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-count-in {
+  animation: countUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Hero image hover ─────────────────────────── */
+.hero-image-wrapper {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-image-wrapper:hover {
+  transform: scale(1.04) translateY(-6px) rotate(2deg);
+  box-shadow: 0 48px 80px -16px rgba(172, 45, 0, 0.18);
+}
+
+/* ── Toast notifications ──────────────────────── */
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateX(120%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toastSlideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(120%); }
+}
+.toast-enter {
+  animation: toastSlideIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.toast-exit {
+  animation: toastSlideOut 0.25s ease-in both;
+}
+
+/* ── Floating AI button pulse ─────────────────── */
+@keyframes aiPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(172, 45, 0, 0.30); }
+  50%       { box-shadow: 0 0 0 10px rgba(172, 45, 0, 0); }
+}
+.ai-float-btn {
+  animation: aiPulse 2.8s ease-in-out infinite;
+}
+
+/* ── Cart badge bounce ────────────────────────── */
+@keyframes cartBounce {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.35); }
+  60%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+.cart-badge-bounce {
+  animation: cartBounce 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Rescue button add animation ──────────────── */
+@keyframes rescuePop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.22); }
+  70%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+.rescue-pop {
+  animation: rescuePop 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Skeleton shimmer ─────────────────────────── */
+@keyframes shimmer {
+  from { background-position: -400px 0; }
+  to   { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #e4eadc 25%, #f0f6e8 50%, #e4eadc 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: 0.5rem;
+}
+
+/* ── Success checkmark ────────────────────────── */
+@keyframes checkScale {
+  0%   { transform: scale(0) rotate(-10deg); opacity: 0; }
+  60%  { transform: scale(1.15) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.animate-check {
+  animation: checkScale 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Chat slide-up panel ──────────────────────── */
+@keyframes chatSlideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.chat-panel-enter {
+  animation: chatSlideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Accordion expand ─────────────────────────── */
+@keyframes accordionOpen {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.accordion-open {
+  animation: accordionOpen 0.25s ease-out both;
 }

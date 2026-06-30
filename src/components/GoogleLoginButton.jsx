@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import API_URL from "../api";
 
 export default function GoogleLoginButton({ role, onLoginSuccess, onLoginFailure }) {
   const [loading, setLoading] = useState(false);
@@ -40,7 +39,7 @@ export default function GoogleLoginButton({ role, onLoginSuccess, onLoginFailure
     setLoading(true);
     setError("");
     try {
-      const response = await fetch(`${API_URL}/api/auth/google`, {
+      const response = await fetch("http://localhost:5000/api/auth/google", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

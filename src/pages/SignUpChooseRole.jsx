@@ -1,16 +1,17 @@
 import React from "react";
+import Logo from "../components/Logo";
 
 export default function SignUpChooseRole({ onNavigate }) {
   return (
-    <div className="flex-grow flex items-center justify-center px-4 py-12 relative overflow-hidden min-h-[calc(100vh-150px)]">
+    <div className="flex-grow flex items-center justify-center px-4 pt-28 pb-12 relative overflow-hidden min-h-screen">
       {/* Background Graphic Blobs */}
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-surface-container-high rounded-full blur-3xl opacity-50 pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-secondary-container/20 rounded-full blur-3xl opacity-40 pointer-events-none" />
-
+ 
       <div className="w-full max-w-2xl z-10">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-extrabold tracking-tight text-primary font-headline">Join Lo’ma</h1>
-          <p className="text-on-surface-variant font-body mt-2">Select your role to start saving food or recovering kitchen revenue.</p>
+        <div className="text-center mb-10 flex flex-col items-center">
+          <Logo size="lg" className="mb-2" />
+          <p className="text-on-surface-variant font-body">Select your role to start saving food or recovering kitchen revenue.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">

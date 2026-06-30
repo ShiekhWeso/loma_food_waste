@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
-import API_URL from "../api";
-
+import Logo from "../components/Logo";
 
 export default function Login({ onLogin, onNavigate }) {
   const [role, setRole] = useState("customer"); // customer or restaurant
@@ -16,7 +15,7 @@ export default function Login({ onLogin, onNavigate }) {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -42,16 +41,17 @@ export default function Login({ onLogin, onNavigate }) {
   };
 
   return (
-    <div className="flex-grow flex items-center justify-center px-4 py-12 relative overflow-hidden min-h-[calc(100vh-150px)]">
+    <div className="flex-grow flex items-center justify-center px-4 pt-28 pb-12 relative overflow-hidden min-h-screen">
       {/* Background Graphic Blobs */}
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-surface-container-high rounded-full blur-3xl opacity-50 pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-secondary-container/20 rounded-full blur-3xl opacity-40 pointer-events-none" />
       
       <div className="w-full max-w-md z-10">
         {/* Brand Anchor */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold tracking-tight text-primary font-headline">Lo’ma</h1>
-          <p className="text-on-surface-variant font-body mt-2">Conscious Epicureanism</p>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <Logo size="lg" className="mb-4" />
+          <h1 className="text-3xl font-headline font-extrabold text-on-background tracking-tight">Welcome Back</h1>
+          <p className="text-xs text-on-surface-variant mt-1">Sign in to rescue surplus gourmet meals or manage your kitchen.</p>
         </div>
 
         {/* Auth Card */}
