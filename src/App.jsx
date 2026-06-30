@@ -254,7 +254,7 @@ export default function App() {
   const renderPage = () => {
     switch (activePage) {
       case "landing":
-        return <LandingPage onNavigate={setActivePage} />;
+        return <LandingPage onNavigate={setActivePage} onSelectMeal={setSelectedMeal} />;
       case "customer-home":
         return (
           <CustomerHome 

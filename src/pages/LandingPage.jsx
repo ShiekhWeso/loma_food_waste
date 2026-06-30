@@ -72,7 +72,7 @@ const FEATURED_DEALS = [
   }
 ];
 
-export default function LandingPage({ onNavigate }) {
+export default function LandingPage({ onNavigate, onSelectMeal }) {
   const impactRef   = useRef(null);
   const [started, setStarted] = useState(false);
 
@@ -241,7 +241,7 @@ export default function LandingPage({ onNavigate }) {
             {FEATURED_DEALS.map((deal) => (
               <div
                 key={deal.id}
-                onClick={() => onNavigate("browse-deals")}
+                onClick={() => onSelectMeal(deal)}
                 className="group cursor-pointer text-left"
               >
                 <div className="relative rounded-3xl overflow-hidden mb-6 aspect-square bg-surface-dim">
