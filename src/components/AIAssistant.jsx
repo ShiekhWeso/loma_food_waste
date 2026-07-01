@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const GROQ_PROXY_URL = "http://localhost:5000/api/groq";
+const GROQ_PROXY_URL = `${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/groq`;
 
 // ── Bilingual System Prompt ───────────────────────────────────────────────────
 function buildSystemPrompt(meals, user) {

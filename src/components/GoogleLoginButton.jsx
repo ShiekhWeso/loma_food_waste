@@ -39,7 +39,7 @@ export default function GoogleLoginButton({ role, onLoginSuccess, onLoginFailure
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:5000/api/auth/google", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
