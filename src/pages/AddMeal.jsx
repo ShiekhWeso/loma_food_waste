@@ -134,9 +134,11 @@ export default function AddMeal({ user, onAddMealSuccess, editingMeal, onCancelE
         hidden: editingMeal ? editingMeal.hidden : false
       };
 
+      const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
       const url = editingMeal 
-        ? `http://localhost:5000/api/meals/${editingMeal.id}`
-        : "http://localhost:5000/api/meals";
+        ? `${baseUrl}/api/meals/${editingMeal.id}` 
+        : `${baseUrl}/api/meals`;
       
       const method = editingMeal ? "PUT" : "POST";
 

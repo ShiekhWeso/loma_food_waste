@@ -29,7 +29,7 @@ export default function ProfilePage({ user, onLogout, onNavigate, addToast }) {
   const fetchOrders = async () => {
     try {
       setLoadingOrders(true);
-      const res = await fetch(`http://localhost:5000/api/orders?customerId=${user.id}`);
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/orders?customerId=${user.id}`);
       if (res.ok) {
         const data = await res.json();
         setOrders(data);

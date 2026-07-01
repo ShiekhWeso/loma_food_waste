@@ -22,14 +22,17 @@ export default function OverviewDashboard({ user, onRefreshMeals, setActiveTab }
   const fetchData = async () => {
     if (!user) return;
     try {
+      setLoading(true);
+      const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
       // Fetch meals
-      const resMeals = await fetch("http://localhost:5000/api/meals");
+      const resMeals = await fetch(`${baseUrl}/api/meals`);
       const mealsData = await resMeals.json();
       const restaurantMeals = mealsData.filter(m => m.restaurant === user.name);
       setMeals(restaurantMeals);
 
       // Fetch orders
-      const resOrders = await fetch(`http://localhost:5000/api/orders?restaurant=${encodeURIComponent(user.name)}`);
+      const resOrders = await fetch(`${baseUrl}/api/orders?restaurant=${encodeURIComponent(user.name)}`);
       const ordersData = await resOrders.json();
       setOrders(ordersData);
 

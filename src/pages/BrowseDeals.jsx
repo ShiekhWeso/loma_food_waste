@@ -31,7 +31,6 @@ export default function BrowseDeals({
       const queryParams = locationCoords?.lat && locationCoords?.lng
         ? `?lat=${locationCoords.lat}&lng=${locationCoords.lng}`
         : "";
-      // const res  = await fetch(`http://localhost:5000/api/meals${queryParams}`);
       const res  = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/meals${queryParams}`);
       const data = await res.json();
       // Filter out hidden and expired meals

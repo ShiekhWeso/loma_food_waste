@@ -18,10 +18,10 @@ export default function AnalyticsDashboard({ user }) {
     if (!user) return;
     try {
       setLoading(true);
-      const resOrders = await fetch(`http://localhost:5000/api/orders?restaurant=${encodeURIComponent(user.name)}`);
+      const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
+      const resOrders = await fetch(`${baseUrl}/api/orders?restaurant=${encodeURIComponent(user.name)}`);
       const orders = await resOrders.json();
-      
-      const resMeals = await fetch("http://localhost:5000/api/meals");
+      const resMeals = await fetch(`${baseUrl}/api/meals`);
       const meals = await resMeals.json();
       const myMeals = meals.filter(m => m.restaurant === user.name);
 

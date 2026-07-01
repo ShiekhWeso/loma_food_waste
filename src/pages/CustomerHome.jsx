@@ -18,14 +18,14 @@ export default function CustomerHome({ user, meals, onNavigate, onAddToCart, add
     if (!user) return;
     const fetchData = async () => {
       try {
-        setLoading(true);
-        const res  = await fetch(`http://localhost:5000/api/orders?customerId=${user.id}`);
-        const orders = res.ok ? await res.json() : [];
-        setRecentOrders(orders.slice(0, 3));
+      setLoading(true);
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/orders?customerId=${user.id}`);
+      const orders = res.ok ? await res.json() : [];
+      setRecentOrders(orders.slice(0, 3));
       } catch (e) {
-        console.error(e);
+      console.error(e);
       } finally {
-        setLoading(false);
+      setLoading(false);
       }
     };
     fetchData();

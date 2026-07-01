@@ -8,7 +8,7 @@ export default function LiveDealsDashboard({ user, onRefreshMeals }) {
   const fetchMeals = async (showLoading = true) => {
     try {
       if (showLoading) setLoading(true);
-      const res = await fetch("http://localhost:5000/api/meals");
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/meals`);
       const data = await res.json();
       const filtered = data.filter(m => m.restaurant === (user ? user.name : "The Conscious Kitchen"));
       setMeals(filtered);
@@ -30,7 +30,7 @@ export default function LiveDealsDashboard({ user, onRefreshMeals }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to end this rescue deal?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/meals/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/meals/${id}`, {
         method: "DELETE"
       });
       if (res.ok) {
@@ -47,7 +47,7 @@ export default function LiveDealsDashboard({ user, onRefreshMeals }) {
   const handleUpdateStock = async (id, newQty) => {
     if (newQty < 0) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/meals/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/meals/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ qty: newQty })

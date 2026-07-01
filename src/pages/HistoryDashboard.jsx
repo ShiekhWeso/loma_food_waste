@@ -41,7 +41,7 @@ export default function HistoryDashboard({ user }) {
         ? `restaurant=${encodeURIComponent(user.name)}`
         : `customerId=${user.id}`;
         
-      const res = await fetch(`http://localhost:5000/api/orders?${queryParam}`);
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/orders?${queryParam}`);
       const data = await res.json();
       setOrders(data);
       setFilteredOrders(data);

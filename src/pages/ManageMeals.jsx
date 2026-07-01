@@ -8,7 +8,7 @@ export default function ManageMeals({ user, onRefreshMeals, onSelectMealForEdit 
     if (!user) return;
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/meals");
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/meals`);
       const data = await res.json();
       const filtered = data.filter(m => m.restaurant === user.name);
       setMeals(filtered);
@@ -25,7 +25,7 @@ export default function ManageMeals({ user, onRefreshMeals, onSelectMealForEdit 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this listing completely?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/meals/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/meals/${id}`, {
         method: "DELETE"
       });
       if (res.ok) {
@@ -42,7 +42,7 @@ export default function ManageMeals({ user, onRefreshMeals, onSelectMealForEdit 
   const handleToggleHide = async (meal) => {
     const nextHiddenState = !meal.hidden;
     try {
-      const res = await fetch(`http://localhost:5000/api/meals/${meal.id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/meals/${meal.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ hidden: nextHiddenState })
@@ -71,7 +71,7 @@ export default function ManageMeals({ user, onRefreshMeals, onSelectMealForEdit 
         returnReason: meal.returnReason || "Cancellation"
       };
 
-      const res = await fetch("http://localhost:5000/api/meals", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/meals`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(duplicatedMeal)

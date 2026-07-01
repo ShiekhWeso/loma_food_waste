@@ -37,7 +37,7 @@ export default function RestaurantDashboard({ user, onNavigate, onLogout, onRefr
     setClearResult(null);
     try {
       const res = await fetch(
-        `http://localhost:5000/api/meals/restaurant/${encodeURIComponent(user.name)}`,
+        `${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/meals/restaurant/${encodeURIComponent(user.name)}`,
         { method: "DELETE" }
       );
       const data = await res.json();
