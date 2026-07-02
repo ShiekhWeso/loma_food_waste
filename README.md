@@ -10,7 +10,7 @@ Lo'ma is a full-stack web application designed to combat food waste by connectin
 - State & Tooling: Component-based UI rendering, responsive mobile-first layouts, and integrated package handling
 ### Getting Started
 To get a local copy up and running, follow these simple steps:
-1. Clone the repository: `git clone https://github.com/ShiekhWeso/loma-food-rescue.git`
+1. Clone the repository: `git clone https://github.com/ShiekhWeso/loma_food_waste`
 2. Install dependencies:
 ```
 cd loma-food-rescue
