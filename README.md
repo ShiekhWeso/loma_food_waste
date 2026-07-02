@@ -13,7 +13,7 @@ To get a local copy up and running, follow these simple steps:
 1. Clone the repository: `git clone https://github.com/ShiekhWeso/loma_food_waste`
 2. Install dependencies:
 ```
-cd loma-food-rescue
+cd loma-food-waste
 npm install
 ```
 3. Run the development server: `npm start`
