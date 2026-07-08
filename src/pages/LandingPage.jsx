@@ -51,30 +51,57 @@ const METRICS = [
 
 const FEATURED_DEALS = [
   {
-    id: 4, name: "Mediterranean Grill Set", restaurant: "The Conscious Kitchen",
-    distance: "0.4 mi", originalPrice: 22.00, rescuePrice: 8.50, expiresIn: "4 mins left",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDaCVmdhRQc-jENQd7Hn2CHRk17TcINAtc9I32I0MZ4XFD--DHJ6b5GfB_NVYNjZykLzBipUjQtpYrOcy9dn_jLMpCJZjR-R7eOfmszeUvFEAINUxQE1jrS4K7CS8gnWQSt6XVgl4g-60wLtTXdJRCmwhH0D8e_20vA8pLzk8CR-UPfA60skS_zLaGDn6DEQzZpxVdxymMiC0h-Ljw2o_dYfpKPoUo0yo7G8I6TSDkyzL-ZL1YKs3-9VHR7ekEtJs1tJOmaOWqdink"
+    id: 220,
+    name: "Artisan Margherita Pizza",
+    restaurant: "The Conscious Kitchen",
+    distance: "0.4 mi",
+    originalPrice: 16.50,
+    rescuePrice: 6.00,
+    expiresIn: "2 hrs",
+    qty: 5,
+    img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=800"
   },
   {
-    id: 5, name: "Artisan Brunch Platter", restaurant: "Green Sprout Cafe",
-    distance: "1.2 mi", originalPrice: 14.50, rescuePrice: 6.00, expiresIn: "2 meals left",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAQSsSMy-eqU1f8EFGlD9xHdQZgQq89T4btc4S9ePjLEG9zlI95sMKRqMfK4rebz-nSASCjZDLx0jG_R9YOEBsvZzNKRjJFN3R2BedRpnpkDM0jwAGQao8gNfO_UR1PYH85if-NamhqwerIg9s1ezNgnwr3T5B9U2ZMjj4UCzi8jA4WZPQzIdg39iZFiyVzcQxsTg4agOiRNWhW3EwfR4JhVixpoAglDxfFDhKgHm9B_3WMQaqM0Qg_dq9PA37JtA9B-Mipb6EOXGw"
+    id: 237,
+    name: "Gourmet Truffle Burger",
+    restaurant: "Green Sprout Cafe",
+    distance: "1.2 mi",
+    originalPrice: 18.00,
+    rescuePrice: 7.50,
+    expiresIn: "1 hr",
+    qty: 3,
+    img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800"
   },
   {
-    id: 6, name: "Pastry Surprise Box", restaurant: "L'Artisan Boulangerie",
-    distance: "0.8 mi", originalPrice: 18.00, rescuePrice: 4.50, expiresIn: "12 mins left",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC14W2OOGKeJifIRX1jGJNwF13y3o-SB3bK6OygyybcOOyScJIOQplI5Njx7ImfmQCErGMrf7KUUNr8A5mdj2d9dCOe5RLf8X4wODSMRaIa0e0CgFvfNZWQYrD-EsjvYAYvJ1eikXFI5tjAjRfjT5FvAavg-LdCrY9RZVpvTqXURC_mR8woiPIkPu_xLo2DDt5SmEInZ69NpCKSbBkn_zHIz8kN8NheeFH86CHM3XnQ9q2c67-63v6LnZgHYVjiCQJSwkyVfQ2Rbfk"
+    id: 254,
+    name: "Creamy Fettuccine Alfredo",
+    restaurant: "L'Artisan Boulangerie",
+    distance: "0.8 mi",
+    originalPrice: 20.00,
+    rescuePrice: 8.00,
+    expiresIn: "3 hrs",
+    qty: 4,
+    img: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&q=80&w=800"
   },
   {
-    id: 7, name: "Superfood Salmon Bowl", restaurant: "The Fresh Table",
-    distance: "2.5 mi", originalPrice: 24.00, rescuePrice: 9.00, expiresIn: "High Impact",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAYHPTMnggVobMnOedMKjmDFsVs7hqNtr2bCdG7on-am2L9ExYG57ctyETmr0HIUAX_yNItvZdF3ug10auisI30bWmgXMyxQFr8Td4_IpiO7akGbcGlHK8mwo0qCqZD2pEViftuX86n6IDMzi-948LN3wOJ8ZJzLQAzNckWPpTzJdCkgFgfOTBuw-e6PKMSRp7gVzRB32swBHlFjPU-jyyoDoHMay2Wy1YUhClH63NKHVrGtpaKcbGwmI18MiDBGeBEUlv7PVik8XM"
+    id: 271,
+    name: "Crispy Grilled Chicken Bowl",
+    restaurant: "The Fresh Table",
+    distance: "2.5 mi",
+    originalPrice: 22.00,
+    rescuePrice: 9.00,
+    expiresIn: "4 hrs",
+    qty: 6,
+    img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800"
   }
 ];
 
-export default function LandingPage({ onNavigate, onSelectMeal }) {
+export default function LandingPage({ onNavigate, onSelectMeal, meals = [] }) {
   const impactRef   = useRef(null);
   const [started, setStarted] = useState(false);
+
+  const liveMeals = (meals || []).filter(m => m.qty > 0 && !m.hidden);
+  const displayMeals = liveMeals.length > 0 ? liveMeals.slice(0, 4) : FEATURED_DEALS;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -238,7 +265,7 @@ export default function LandingPage({ onNavigate, onSelectMeal }) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {FEATURED_DEALS.map((deal) => (
+            {displayMeals.map((deal) => (
               <div
                 key={deal.id}
                 onClick={() => onSelectMeal(deal)}
@@ -251,7 +278,7 @@ export default function LandingPage({ onNavigate, onSelectMeal }) {
                     src={deal.img}
                   />
                   <div className="absolute top-4 left-4 bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                    {deal.expiresIn}
+                    {deal.expiresIn || `${deal.qty} left`}
                   </div>
                 </div>
                 <h4 className="text-xl font-bold mb-1 text-on-surface truncate font-headline">{deal.name}</h4>

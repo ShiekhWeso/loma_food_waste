@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 
-export default function ProfilePage({ user, onLogout, onNavigate, addToast }) {
+export default function ProfilePage({ user, meals, onLogout, onNavigate, addToast, onToggleFavorite, onAddToCart }) {
   const [activeTab, setActiveTab] = useState("info");
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+
+  const favoriteMeals = (meals || []).filter(meal => user?.favorites?.includes(meal.id));
 
   // Editable Profile Info Form State
   const [name, setName] = useState(user ? user.name : "");
@@ -92,6 +94,7 @@ export default function ProfilePage({ user, onLogout, onNavigate, addToast }) {
             {[
               { id: "info", label: "Personal Info", icon: "person" },
               { id: "orders", label: "My Orders", icon: "history" },
+              { id: "favorites", label: "Favorite Meals", icon: "favorite" },
               { id: "preferences", label: "Preferences", icon: "settings" },
             ].map(tab => (
               <button
@@ -256,6 +259,82 @@ export default function ProfilePage({ user, onLogout, onNavigate, addToast }) {
                             className="bg-primary/10 hover:bg-primary hover:text-white text-primary px-3 py-1 rounded-lg text-xs font-bold transition-all"
                           >
                             Reorder
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 2.5: Favorite Meals */}
+          {activeTab === "favorites" && (
+            <div>
+              <h3 className="text-2xl font-headline font-extrabold text-on-surface mb-6">Favorite Meals</h3>
+              
+              {favoriteMeals.length === 0 ? (
+                <div className="text-center py-12 border border-dashed border-outline-variant/30 rounded-2xl">
+                  <span className="material-symbols-outlined text-4xl text-outline-variant mb-2">favorite</span>
+                  <p className="text-sm text-on-surface-variant font-semibold">You haven't favorited any meals yet.</p>
+                  <button
+                    onClick={() => onNavigate("marketplace")}
+                    className="mt-3 text-primary font-bold text-xs hover:underline"
+                  >
+                    Browse Food to Favorite
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {favoriteMeals.map(meal => {
+                    const discount = meal.discount || Math.round(((meal.originalPrice - meal.rescuePrice) / meal.originalPrice) * 100);
+                    return (
+                      <div key={meal.id} className="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/10 flex gap-4 items-center">
+                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-surface-dim shrink-0 relative">
+                          <img src={meal.img} alt={meal.name} className="w-full h-full object-cover" />
+                          <div className="absolute top-1 left-1 bg-primary text-white text-[8px] font-extrabold px-1 py-0.5 rounded shadow">
+                            -{discount}%
+                          </div>
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-headline font-bold text-sm text-on-surface truncate">{meal.name}</h4>
+                          <p className="text-xs text-secondary font-semibold flex items-center gap-1 mt-0.5">
+                            <span className="material-symbols-outlined text-xs">storefront</span>
+                            <span className="truncate">{meal.restaurant}</span>
+                          </p>
+                          <div className="flex items-baseline gap-2 mt-1">
+                            <span className="font-headline font-extrabold text-sm text-primary">${meal.rescuePrice.toFixed(2)}</span>
+                            <span className="text-[10px] text-stone-400 line-through font-medium">${meal.originalPrice.toFixed(2)}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2 shrink-0">
+                          <button
+                            onClick={() => {
+                              onAddToCart?.(meal, 1);
+                              if (addToast) {
+                                addToast({
+                                  type: "success",
+                                  title: "Added to Cart!",
+                                  message: `${meal.name} added to your rescue cart.`
+                                });
+                              }
+                            }}
+                            disabled={meal.qty <= 0}
+                            className="bg-primary hover:bg-primary-container text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-warm flex items-center gap-1 active:scale-95 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
+                          >
+                            <span className="material-symbols-outlined text-xs">add_shopping_cart</span>
+                            <span>Rescue</span>
+                          </button>
+                          
+                          <button
+                            onClick={() => onToggleFavorite?.(meal.id)}
+                            className="border border-outline-variant/20 hover:bg-error-container/10 hover:text-error text-stone-500 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
+                          >
+                            <span className="material-symbols-outlined text-xs text-red-500 fill">favorite</span>
+                            <span>Remove</span>
                           </button>
                         </div>
                       </div>

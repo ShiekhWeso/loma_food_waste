@@ -26,11 +26,45 @@ import Footer from "./components/Footer";
 
 
 export default function App() {
-  const [activePage, setActivePage] = useState("landing");
+  const [activePage, setActivePageState] = useState(() => {
+    const query = new URLSearchParams(window.location.search);
+    const urlPage = query.get("page");
+    return urlPage || localStorage.getItem("loma_active_page") || "landing";
+  });
+
+  const setActivePage = (page) => {
+    setActivePageState(page);
+    window.history.pushState({ page }, "", `?page=${page}`);
+  };
+
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (event.state && event.state.page) {
+        setActivePageState(event.state.page);
+      } else {
+        const query = new URLSearchParams(window.location.search);
+        setActivePageState(query.get("page") || "landing");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    
+    // Initialize history state on first load if empty
+    if (!window.history.state || !window.history.state.page) {
+      window.history.replaceState({ page: activePage }, "", `?page=${activePage}`);
+    }
+
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [activePage]);
+
+  useEffect(() => {
+    localStorage.setItem("loma_active_page", activePage);
+  }, [activePage]);
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("loma_user");
     return saved ? JSON.parse(saved) : null;
   });
+
   const [locationAddress, setLocationAddress] = useState(() => {
     return localStorage.getItem("loma_location_addr") || "Cairo, Maadi";
   });
@@ -76,9 +110,60 @@ export default function App() {
     setToasts((prev) => [...prev, { id, type, title, message, duration }]);
   };
 
+  // Handle Online/Offline Status for PWA
+  useEffect(() => {
+    const handleOnline = () => {
+      addToast({
+        type: "success",
+        title: "Back Online",
+        message: "You are connected to the network again.",
+        duration: 3000
+      });
+    };
+    const handleOffline = () => {
+      addToast({
+        type: "warning",
+        title: "Working Offline",
+        message: "Lo'ma is running in offline mode using local cache.",
+        duration: 5000
+      });
+    };
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
   const removeToast = (id) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
+
+  // PWA Installation state and event handlers
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      // Let the browser handle the install prompt natively in the URL bar
+    };
+
+    const handleAppInstalled = () => {
+      addToast({
+        type: "success",
+        title: "App Installed",
+        message: "Lo'ma Food Waste Rescue was installed successfully!"
+      });
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
+
 
   // Sync state with localStorage
   useEffect(() => {
@@ -93,51 +178,53 @@ export default function App() {
     localStorage.setItem("loma_cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Handle Paymob redirect query params
+  // Handle Paymob redirect query params (fires when Paymob redirects back to our app after 3DS)
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     const paymobTxId = query.get("id");
     const success = query.get("success");
     const pending = query.get("pending");
 
-    if (paymobTxId && success) {
+    if (paymobTxId && success !== null) {
       const isSuccess = success === "true";
       const isPending = pending === "true";
       const pendingOrderId = localStorage.getItem("loma_pending_order_id");
+      
+      // Clean URL immediately
+      window.history.replaceState({}, document.title, window.location.pathname);
 
       if (pendingOrderId) {
         if (isSuccess && !isPending) {
-          fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/orders/${pendingOrderId}`)
-            .then(res => res.json())
-            .then(orderData => {
-              if (orderData && orderData.status !== "Payment Failed") {
-                setLastOrder(orderData);
-                setCartItems([]);
-                localStorage.removeItem("loma_cart");
-                addToast({
-                  type: "success",
-                  title: "Payment Successful",
-                  message: "Your rescue order has been logged!"
-                });
-                setActivePage("order-confirmation");
-              } else {
-                addToast({
-                  type: "error",
-                  title: "Payment Failed",
-                  message: "Verification failed. Please contact support."
-                });
-                setActivePage("checkout");
-              }
-            })
-            .catch(err => {
-              console.error("Error validating order:", err);
-              setActivePage("checkout");
-            })
-            .finally(() => {
+          // Payment succeeded — update order status via simulate-success
+          // so the polling in the original Checkout tab can detect it
+          fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/paymob/simulate-success`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderId: pendingOrderId })
+          })
+          .then(res => res.json())
+          .then(orderData => {
+            if (orderData && orderData.status) {
+              // If this tab has the checkout open (same-tab flow), handle here too
+              setLastOrder(orderData);
+              setCartItems([]);
+              localStorage.removeItem("loma_cart");
               localStorage.removeItem("loma_pending_order_id");
-              window.history.replaceState({}, document.title, window.location.pathname);
-            });
+              addToast({
+                type: "success",
+                title: "Payment Successful! ✅",
+                message: "Your rescue order has been confirmed and logged!"
+              });
+              setActivePage("order-confirmation");
+            }
+          })
+          .catch(err => {
+            console.error("Error confirming payment:", err);
+            // If this is the redirected new-tab — just close it so original tab handles via polling
+            localStorage.removeItem("loma_pending_order_id");
+          });
         } else {
+          // Payment failed or cancelled
           addToast({
             type: "error",
             title: "Payment Cancelled",
@@ -145,10 +232,10 @@ export default function App() {
           });
           localStorage.removeItem("loma_pending_order_id");
           setActivePage("checkout");
-          window.history.replaceState({}, document.title, window.location.pathname);
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch meals on launch and when user changes
@@ -178,6 +265,9 @@ export default function App() {
 
     if (userData.role === "restaurant") {
       setActivePage("restaurant-dashboard");
+      // Clear rescue cart if restaurant signs in
+      setCartItems([]);
+      localStorage.removeItem("loma_cart");
     } else {
       setActivePage("customer-home");
     }
@@ -195,6 +285,15 @@ export default function App() {
   };
 
   const handleAddToCart = (meal, qty) => {
+    if (user && user.role === "restaurant") {
+      addToast({
+        type: "error",
+        title: "Action Restricted",
+        message: "Restaurants are not allowed to rescue meals."
+      });
+      return;
+    }
+
     setCartItems((prevItems) => {
       const existing = prevItems.find((item) => item.id === meal.id);
       if (existing) {
@@ -206,6 +305,50 @@ export default function App() {
       }
     });
     // Removed automatic cart sidebar opening: only trigger toast notification!
+  };
+
+  const handleToggleFavorite = async (mealId) => {
+    if (!user) {
+      addToast({
+        type: "warning",
+        title: "Authentication Required",
+        message: "Please log in to add meals to your favorites."
+      });
+      setActivePage("login");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/users/${user.id}/favorites`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mealId })
+      });
+      if (res.ok) {
+        const updatedUser = await res.json();
+        setUser(updatedUser);
+        const isFav = updatedUser.favorites?.includes(mealId);
+        addToast({
+          type: "success",
+          title: isFav ? "Added to Favorites" : "Removed from Favorites",
+          message: isFav ? "This meal has been added to your favorites." : "This meal has been removed from your favorites."
+        });
+      } else {
+        const errData = await res.json();
+        addToast({
+          type: "error",
+          title: "Error",
+          message: errData.message || "Failed to update favorites."
+        });
+      }
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+      addToast({
+        type: "error",
+        title: "Network Error",
+        message: "Could not connect to the server."
+      });
+    }
   };
 
   const handleUpdateCartQty = (itemId, qty) => {
@@ -240,7 +383,7 @@ export default function App() {
           ["landing", "customer-home", "marketplace", "about", "contact", "profile", "checkout"].includes(activePage)) {
         setActivePage("restaurant-dashboard");
       }
-      if (user.role === "customer" && activePage === "restaurant-dashboard") {
+      if (user.role === "customer" && (activePage === "restaurant-dashboard" || activePage === "landing")) {
         setActivePage("customer-home");
       }
     } else {
@@ -254,7 +397,7 @@ export default function App() {
   const renderPage = () => {
     switch (activePage) {
       case "landing":
-        return <LandingPage onNavigate={setActivePage} onSelectMeal={setSelectedMeal} />;
+        return <LandingPage onNavigate={setActivePage} onSelectMeal={setSelectedMeal} meals={meals} />;
       case "customer-home":
         return (
           <CustomerHome 
@@ -263,6 +406,7 @@ export default function App() {
             onNavigate={setActivePage} 
             onAddToCart={handleAddToCart}
             addToast={addToast}
+            onToggleFavorite={handleToggleFavorite}
           />
         );
       case "marketplace":
@@ -276,6 +420,9 @@ export default function App() {
             onOpenLocationPicker={() => setLocationPickerOpen(true)}
             isAuthenticated={!!user}
             addToast={addToast}
+            userRole={user?.role}
+            user={user}
+            onToggleFavorite={handleToggleFavorite}
           />
         );
       case "about":
@@ -286,9 +433,12 @@ export default function App() {
         return (
           <ProfilePage 
             user={user} 
+            meals={meals}
             onLogout={handleLogout} 
             onNavigate={setActivePage}
             addToast={addToast}
+            onToggleFavorite={handleToggleFavorite}
+            onAddToCart={handleAddToCart}
           />
         );
       case "login":
@@ -391,7 +541,12 @@ export default function App() {
         isOpen={selectedMeal !== null}
         onClose={() => setSelectedMeal(null)}
         onAddToCart={handleAddToCart}
+        userRole={user?.role}
+        isFavorite={user?.favorites?.includes(selectedMeal?.id)}
+        onToggleFavorite={handleToggleFavorite}
       />
+
+
 
       {/* Paymob Sandbox Simulator Modal */}
       {mockPaymentData && (
@@ -438,7 +593,8 @@ export default function App() {
                     
                     setMockPaymentData(null);
                     window.history.replaceState({}, document.title, window.location.pathname);
-                    handleOrderSuccess(data);
+                    alert("Payment simulated successfully! Return to your main tab to view your receipt.");
+                    window.close();
                   } catch (err) {
                     alert(err.message);
                   }

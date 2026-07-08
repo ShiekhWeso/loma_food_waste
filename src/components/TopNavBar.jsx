@@ -89,6 +89,8 @@ export default function TopNavBar({
         {/* Right Controls */}
         <div className="flex items-center gap-3">
 
+
+
           {/* Location Picker (public + customer) */}
           {(isPublic || isCustomer) && (
             <button
@@ -179,6 +181,8 @@ export default function TopNavBar({
       {/* Mobile Menu */}
       {mobileOpen && (
         <div className="md:hidden border-t border-outline-variant/10 bg-surface-container-lowest px-6 py-4 flex flex-col items-start gap-4 animate-page-in">
+          
+
           {isPublic && (
             <>
               <NavBtn page="browse-deals">Browse</NavBtn>

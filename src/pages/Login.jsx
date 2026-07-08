@@ -166,9 +166,10 @@ export default function Login({ onLogin, onNavigate }) {
               <div className="flex-grow border-t border-outline-variant/20"></div>
             </div>
 
-            {/* Google Authentication */}
+            {/* Gmail / Google Authentication */}
             <GoogleLoginButton
               role={role}
+              label="Sign In with Gmail"
               onLoginSuccess={onLogin}
               onLoginFailure={(err) => setError(err)}
             />

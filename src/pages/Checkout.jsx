@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate, addToast }) {
   const [name, setName] = useState(user ? user.name : "");
@@ -14,6 +14,42 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate, 
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [waitingForPayment, setWaitingForPayment] = useState(false);
+  const [pendingOrderId, setPendingOrderId] = useState(null);
+
+  useEffect(() => {
+    if (!waitingForPayment || !pendingOrderId) return;
+    
+    let intervalId = setInterval(async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/orders/${pendingOrderId}`);
+        if (res.ok) {
+          const order = await res.json();
+          if (order.status === "Pending Pickup" || order.status === "Completed") {
+            clearInterval(intervalId);
+            setWaitingForPayment(false);
+            if (addToast) {
+              addToast({
+                type: "success",
+                title: "Payment Successful",
+                message: "Your payment has been received and verified!"
+              });
+            }
+            onOrderSuccess(order);
+          } else if (order.status === "Payment Failed") {
+            clearInterval(intervalId);
+            setWaitingForPayment(false);
+            setError("The payment transaction failed. Please try again.");
+            setLoading(false);
+          }
+        }
+      } catch (err) {
+        console.error("Error polling order status:", err);
+      }
+    }, 2000);
+
+    return () => clearInterval(intervalId);
+  }, [waitingForPayment, pendingOrderId, onOrderSuccess, addToast]);
 
   const originalTotal = cartItems.reduce((acc, item) => acc + (item.originalPrice * item.quantity), 0);
   const rescueTotal = cartItems.reduce((acc, item) => acc + (item.rescuePrice * item.quantity), 0);
@@ -92,7 +128,13 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate, 
       }
 
       localStorage.setItem("loma_pending_order_id", data.orderId);
-      window.location.href = data.paymentUrl;
+      setPendingOrderId(data.orderId);
+      
+      // Open Paymob URL in a new tab instead of current site redirection
+      window.open(data.paymentUrl, "_blank");
+      
+      // Put the page in waiting state to start order polling
+      setWaitingForPayment(true);
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -323,6 +365,36 @@ export default function Checkout({ cartItems, user, onOrderSuccess, onNavigate, 
         </div>
 
       </div>
+
+      {waitingForPayment && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in text-center">
+          <div className="bg-surface-container-low max-w-md w-full rounded-[2.5rem] p-8 border border-outline-variant/15 shadow-2xl space-y-6">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto animate-pulse">
+              <span className="material-symbols-outlined text-3xl">credit_card</span>
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-headline font-extrabold text-2xl text-on-background">Waiting for Payment</h3>
+              <p className="text-sm text-on-surface-variant leading-relaxed">
+                We opened the secure Paymob payment window in a new tab. Please fill in your card details to complete the rescue!
+              </p>
+            </div>
+            <div className="p-4 bg-primary-container/10 rounded-2xl border border-primary/10 text-xs text-on-primary-container leading-relaxed">
+              <strong>💡 Do not close this page:</strong> As soon as you finish paying in the other tab, this window will automatically update with your receipt.
+            </div>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => {
+                  setWaitingForPayment(false);
+                  setLoading(false);
+                }}
+                className="w-full bg-surface-container-highest text-on-surface py-3.5 rounded-xl font-bold text-sm hover:bg-outline-variant/30 transition-colors"
+              >
+                Cancel & Change Details
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

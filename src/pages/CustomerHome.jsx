@@ -10,7 +10,7 @@ const SHORTCUT_CARDS = [
   { icon: "info",        label: "About Lo'ma",  page: "about",        color: "bg-outline/10 text-outline",   desc: "Our mission" },
 ];
 
-export default function CustomerHome({ user, meals, onNavigate, onAddToCart, addToast }) {
+export default function CustomerHome({ user, meals, onNavigate, onAddToCart, addToast, onToggleFavorite }) {
   const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading]           = useState(true);
 
@@ -137,7 +137,13 @@ export default function CustomerHome({ user, meals, onNavigate, onAddToCart, add
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {featuredMeals.map(meal => (
-                  <MealMiniCard key={meal.id} meal={meal} onRescue={() => handleRescue(meal)} />
+                  <MealMiniCard 
+                    key={meal.id} 
+                    meal={meal} 
+                    onRescue={() => handleRescue(meal)} 
+                    isFavorite={user?.favorites?.includes(meal.id)}
+                    onToggleFavorite={onToggleFavorite}
+                  />
                 ))}
               </div>
             )}
@@ -249,7 +255,7 @@ export default function CustomerHome({ user, meals, onNavigate, onAddToCart, add
 }
 
 // ── Mini Meal Card ────────────────────────────────────────────────────────────
-function MealMiniCard({ meal, onRescue }) {
+function MealMiniCard({ meal, onRescue, isFavorite, onToggleFavorite }) {
   const discount = meal.discount || Math.round(((meal.originalPrice - meal.rescuePrice) / meal.originalPrice) * 100);
   return (
     <div className="group bg-surface-container-lowest rounded-2xl border border-outline-variant/10 overflow-hidden transition-all hover:shadow-[0_8px_24px_rgba(176,46,0,0.08)] hover:border-primary/20 flex flex-col justify-between">
@@ -259,6 +265,19 @@ function MealMiniCard({ meal, onRescue }) {
           <div className="absolute top-3 right-3 bg-primary text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md shadow">
             -{discount}%
           </div>
+          {/* Favorite button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite?.(meal.id);
+            }}
+            className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all z-10"
+            title={isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+          >
+            <span className={`material-symbols-outlined text-base ${isFavorite ? "text-red-500 fill" : "text-stone-600"}`}>
+              favorite
+            </span>
+          </button>
         </div>
         <div className="p-4">
           <h4 className="font-headline font-extrabold text-base text-on-surface truncate mb-1 group-hover:text-primary transition-colors">{meal.name}</h4>

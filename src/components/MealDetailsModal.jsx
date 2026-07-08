@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function MealDetailsModal({ meal, isOpen, onClose, onAddToCart }) {
+export default function MealDetailsModal({ meal, isOpen, onClose, onAddToCart, userRole, isFavorite, onToggleFavorite }) {
   const [qty, setQty] = useState(1);
   if (!isOpen || !meal) return null;
 
@@ -40,6 +40,18 @@ export default function MealDetailsModal({ meal, isOpen, onClose, onAddToCart })
               <span>Freshly Prepared</span>
             </div>
           </div>
+          {/* Favorite button for Customer */}
+          {(!userRole || userRole === "customer") && (
+            <button
+              onClick={() => onToggleFavorite?.(meal.id)}
+              className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all z-10"
+              title={isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+            >
+              <span className={`material-symbols-outlined text-xl ${isFavorite ? "text-red-500 fill" : "text-stone-600"}`}>
+                favorite
+              </span>
+            </button>
+          )}
         </div>
 
         {/* Right: Meal details & Checkout actions */}
@@ -137,7 +149,12 @@ export default function MealDetailsModal({ meal, isOpen, onClose, onAddToCart })
               )}
             </div>
 
-            {meal.qty > 0 ? (
+            {userRole === "restaurant" ? (
+              <div className="w-full bg-error-container/10 border border-error/20 text-error px-4 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
+                <span className="material-symbols-outlined text-base">block</span>
+                <span>Restaurants cannot rescue meals</span>
+              </div>
+            ) : meal.qty > 0 ? (
               <button 
                 onClick={handleAdd}
                 className="w-full bg-primary text-white py-4 rounded-2xl font-headline font-bold text-base shadow-warm hover:bg-primary-container active:scale-95 transition-all duration-150 flex items-center justify-center gap-2"

@@ -15,29 +15,49 @@ function buildSystemPrompt(meals, user) {
     )
     .join("\n");
 
-  return `You are Lo'ma AI Assistant — a smart, bilingual (Arabic & English) food rescue assistant for the Lo'ma platform.
+  return `You are Lo'ma AI Assistant — a smart, bilingual (Arabic & English) food rescue assistant.
+
+# PLATFORM OVERVIEW & MISSION
+Lo'ma connects restaurants with customers to rescue surplus, cancelled, or returned meals at discounted prices (30-70% off).
+Mission: Reduce food waste, help restaurants recover losses, and save customers money. Save Food. Save Money. Save the Planet.
+
+# WHAT IS A RETURNED MEAL?
+A prepared meal that cannot be sold at its original price but is still fresh and safe to eat.
+Reasons include: Cancelled Order, Customer Didn't Pick Up, Wrong Order Prepared, Kitchen Overproduction, Extra Daily Meals, Promotion Leftovers, Catering Surplus, Delivery Failure.
+
+# ENVIRONMENTAL & PLATFORM BENEFITS
+- Restaurants recover financial losses and manage surplus efficiently.
+- Customers buy quality meals for lower prices and discover nearby restaurants.
+- Environment: Reduces food waste in landfills, reduces methane/CO2 emissions, saves water/electricity, and supports Sustainable Development Goals (SDGs).
+
+# FAQs & CORE RULES
+- Are returned meals safe? Yes, they must be freshly prepared, safe, and meet quality standards.
+- Who sets discounts/expiry? The restaurant sets them. Expired meals are removed automatically.
+- Does Lo'ma cook food? No, Lo'ma is just a marketplace.
+
+# AI ASSISTANT RESPONSIBILITIES & TONE
+- Responsibilities: Explain the concept, guide users, recommend meals, answer FAQs, explain sustainability benefits, help during checkout.
+- Tone: Professional, Friendly, Helpful, Fast, Clear, Positive, Supportive.
+- Constraints: Never invent information or meals. If information is unavailable, politely say so. Never use aggressive language. Always encourage food rescue.
 
 CRITICAL LANGUAGE RULE:
 - Detect the language of the user's message.
 - If user writes in Arabic → respond ONLY in Arabic (use natural Egyptian/Modern Standard Arabic).
+- ARABIC QUALITY WARNING: You MUST write in absolutely perfect, grammatically correct Arabic. Pay extremely close attention to spelling, grammar, and formulation. Avoid literal or weird translations. Your text must be professional, clear, and flawlessly spelled.
 - If user writes in English → respond ONLY in English.
 - Never mix languages in the same response.
 
-ABOUT LO'MA:
-Lo'ma rescues surplus high-quality restaurant food at 30-70% discounts, connecting restaurants with conscious diners.
-لو'ما تنقذ الطعام الفائض عالي الجودة من المطاعم بخصومات تصل لـ 70%، وتربط بين المطاعم والمستخدمين الواعيين.
-
-USER:
+USER CONTEXT:
 Name: ${user?.name || "Guest"}
 Role: ${user?.role || "customer"}
 
 AVAILABLE MEALS RIGHT NOW:
 ${mealList || "No meals available currently."}
 
-RULES:
+STRICT INSTRUCTIONS:
 - Only recommend meals from the list above. Never invent meals or prices.
 - Be concise, warm, and helpful.
-- Always end with a clear action suggestion.
+- Always end with a clear action suggestion (e.g. check the marketplace, view your cart, see your orders).
 - If asked something outside Lo'ma scope, redirect gently.`;
 }
 
@@ -53,17 +73,27 @@ const SUGGESTIONS = [
 const isArabicText = (txt) => /[\u0600-\u06FF]/.test(txt);
 
 // ── Detect action buttons from reply ─────────────────────────────────────────
-function detectActions(reply) {
+function detectActions(reply, userText = "") {
   const actions = [];
-  if (/marketplace|browse|meal|deal|وجبات|تصفح|صفقات|متجر|سوق/i.test(reply))
-    actions.push({ label: "🛍 Marketplace", labelAr: "🛍 السوق", page: "marketplace" });
-  if (/cart|checkout|order|سلة|دفع|طلب|شراء/i.test(reply))
-    actions.push({ label: "🛒 Open Cart", labelAr: "🛒 السلة", action: "cart" });
-  if (/order.*histor|my order|طلبات|سجل الطلبات/i.test(reply))
-    actions.push({ label: "📋 My Orders", labelAr: "📋 طلباتي", page: "profile" });
-  if (/profile|account|حساب|ملف شخصي/i.test(reply))
+  const combined = (reply + " " + userText).toLowerCase();
+
+  if (/(marketplace|browse|meal|deal|وجبات|تصفح|صفقات|متجر|سوق|اكل|أكل|طعام)/i.test(combined))
+    actions.push({ label: "🛍 Marketplace", labelAr: "🛍 تصفح السوق", page: "marketplace" });
+  if (/(cart|checkout|order|سلة|دفع|شراء|ادفع)/i.test(combined))
+    actions.push({ label: "🛒 Open Cart", labelAr: "🛒 سلة المشتريات", action: "cart" });
+  if (/(order.*histor|my order|طلبات|سجل الطلبات|طلباتي|مشتريات)/i.test(combined))
+    actions.push({ label: "📋 My Orders", labelAr: "📋 طلباتي السابقة", page: "profile" });
+  if (/(profile|account|حساب|ملف شخصي|اعدادات)/i.test(combined))
     actions.push({ label: "👤 Profile", labelAr: "👤 حسابي", page: "profile" });
-  return actions.slice(0, 3);
+
+  const uniqueActions = [];
+  actions.forEach(a => {
+    if (!uniqueActions.find(u => u.page === a.page && u.action === a.action)) {
+      uniqueActions.push(a);
+    }
+  });
+
+  return uniqueActions.slice(0, 3);
 }
 
 // ── Main Component ────────────────────────────────────────────────────────────
@@ -95,8 +125,10 @@ export default function AIAssistant({ user, meals, onNavigate }) {
   }, [messages, loading]);
 
   useEffect(() => {
-    if (isOpen) setTimeout(() => inputRef.current?.focus(), 300);
-  }, [isOpen]);
+    if (isOpen && !loading) {
+      setTimeout(() => inputRef.current?.focus(), 150);
+    }
+  }, [isOpen, loading]);
 
   // ── Send message ────────────────────────────────────────────────────────────
   const sendMessage = async (text) => {
@@ -139,7 +171,7 @@ export default function AIAssistant({ user, meals, onNavigate }) {
         role: "assistant",
         content: reply,
         id: Date.now(),
-        actions: detectActions(reply)
+        actions: detectActions(reply, userText)
       }]);
     } catch (err) {
       console.error("AI error:", err.message);
@@ -186,8 +218,8 @@ export default function AIAssistant({ user, meals, onNavigate }) {
       {/* ── Chat Panel (Larger size layout) ── */}
       {isOpen && (
         <div
-          className="chat-panel-enter fixed bottom-24 right-6 z-[150] bg-background rounded-[2.25rem] shadow-[0_28px_72px_rgba(0,0,0,0.18)] border border-outline-variant/15 flex flex-col overflow-hidden font-body"
-          style={{ width: "480px", maxHeight: "680px", minHeight: "500px" }}
+          className="chat-panel-enter fixed bottom-24 right-4 md:right-6 z-[150] bg-background rounded-[2.25rem] shadow-[0_28px_72px_rgba(0,0,0,0.18)] border border-outline-variant/15 flex flex-col overflow-hidden font-body"
+          style={{ width: "400px", maxWidth: "calc(100vw - 32px)", maxHeight: "75vh", minHeight: "350px" }}
         >
           {/* Header */}
           <div className="bg-gradient-to-r from-primary to-primary-container px-6 py-5 flex items-center gap-3 shrink-0">
@@ -233,7 +265,7 @@ export default function AIAssistant({ user, meals, onNavigate }) {
                   </div>
 
                   {msg.actions?.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-1 pl-1">
+                    <div className="flex flex-wrap gap-2 mt-2">
                       {msg.actions.map((action, i) => (
                         <button
                           key={i}
@@ -300,7 +332,7 @@ export default function AIAssistant({ user, meals, onNavigate }) {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="اسألني أي شيء..."
+                placeholder={uiLang === "ar" ? "اسألني أي شيء..." : "Ask me anything..."}
                 dir="auto"
                 className="flex-1 bg-surface-container-low border border-outline-variant/20 rounded-xl px-5 py-3 text-sm font-semibold text-on-background placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/30 transition-all"
                 disabled={loading}

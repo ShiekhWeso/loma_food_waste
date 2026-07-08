@@ -32,6 +32,7 @@ export default function SignUpPartner({ onLogin, onNavigate }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           name: kitchenName, 
+          contactName,
           email, 
           password, 
           role: "restaurant",
@@ -229,9 +230,10 @@ export default function SignUpPartner({ onLogin, onNavigate }) {
               <div className="flex-grow border-t border-outline-variant/20"></div>
             </div>
 
-            {/* Google Signup */}
+            {/* Gmail / Google Signup */}
             <GoogleLoginButton
               role="restaurant"
+              label="Sign Up with Gmail"
               onLoginSuccess={onLogin}
               onLoginFailure={(err) => setError(err)}
             />

@@ -148,3 +148,34 @@
 .accordion-open {
   animation: accordionOpen 0.25s ease-out both;
 }
+
+/* ── Ambient Floating Glows ─────────────────── */
+@keyframes floatGlow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -20px) scale(1.1); }
+}
+.animate-glow-slow {
+  animation: floatGlow 10s ease-in-out infinite;
+}
+.animate-glow-delayed {
+  animation: floatGlow 14s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+/* ── Staggered item entry animations ─────────── */
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: slideUpFade 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.delay-75 { animation-delay: 75ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+

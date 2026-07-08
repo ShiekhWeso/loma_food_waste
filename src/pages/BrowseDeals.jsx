@@ -14,7 +14,10 @@ export default function BrowseDeals({
   locationCoords,
   onOpenLocationPicker,
   isAuthenticated = false,
-  addToast
+  addToast,
+  userRole,
+  user,
+  onToggleFavorite
 }) {
   const [meals, setMeals]       = useState([]);
   const [sort, setSort]         = useState("discount");
@@ -275,6 +278,21 @@ export default function BrowseDeals({
                         <div className="absolute top-3 right-3 bg-primary text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg shadow-md">
                           -{discountPct}%
                         </div>
+                        {/* Favorite button */}
+                        {(!userRole || userRole === "customer") && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onToggleFavorite?.(meal.id);
+                            }}
+                            className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all z-10"
+                            title={user?.favorites?.includes(meal.id) ? "Remove from Favorites" : "Add to Favorites"}
+                          >
+                            <span className={`material-symbols-outlined text-lg ${user?.favorites?.includes(meal.id) ? "text-red-500 fill" : "text-stone-600"}`}>
+                              favorite
+                            </span>
+                          </button>
+                        )}
                       </div>
 
                       {/* Meal Name (Bold & Prominent) */}
@@ -329,16 +347,19 @@ export default function BrowseDeals({
 
                       <button
                         onClick={e => handleRescue(e, meal)}
-                        disabled={meal.qty <= 0}
+                        disabled={meal.qty <= 0 || userRole === "restaurant"}
                         className={`
                           bg-primary text-white hover:bg-primary-container
                           px-4 py-2.5 rounded-xl transition-all font-bold text-xs flex items-center justify-center gap-1.5 shadow-warm
                           active:scale-95 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed
                           ${rescuedId === meal.id ? "rescue-pop" : ""}
                         `}
+                        title={userRole === "restaurant" ? "Restaurants cannot rescue meals" : ""}
                       >
-                        <span className="material-symbols-outlined text-sm font-bold">add_shopping_cart</span>
-                        <span>Rescue</span>
+                        <span className="material-symbols-outlined text-sm font-bold">
+                          {userRole === "restaurant" ? "block" : "add_shopping_cart"}
+                        </span>
+                        <span>{userRole === "restaurant" ? "Restricted" : "Rescue"}</span>
                       </button>
                     </div>
                   </div>

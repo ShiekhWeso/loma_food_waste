@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-export default function GoogleLoginButton({ role, onLoginSuccess, onLoginFailure }) {
+export default function GoogleLoginButton({ role, label, onLoginSuccess, onLoginFailure }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
@@ -146,26 +146,14 @@ export default function GoogleLoginButton({ role, onLoginSuccess, onLoginFailure
         {loading || (isRealClient && !gsiLoaded) ? (
           <div className="w-5 h-5 border-2 border-stone-300 border-t-stone-600 rounded-full animate-spin" />
         ) : (
-          <svg className="w-5 h-5" viewBox="0 0 24 24">
-            <path
-              fill="#EA4335"
-              d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.67 1.53 14.98 1 12 1 7.35 1 3.37 3.67 1.39 7.56l3.85 2.99c.9-2.7 3.42-4.51 6.76-4.51z"
-            />
-            <path
-              fill="#4285F4"
-              d="M23.49 12.27c0-.81-.07-1.59-.2-2.35H12v4.51h6.48c-.29 1.48-1.14 2.73-2.43 3.58l3.8 2.95c2.21-2.04 3.64-5.05 3.64-8.69z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.24 14.88c-.24-.72-.38-1.49-.38-2.28 0-.79.14-1.56.38-2.28L1.39 7.33C.5 9.12 0 11.11 0 13.2s.5 4.08 1.39 5.87l3.85-2.99z"
-            />
-            <path
-              fill="#34A853"
-              d="M12 23c3.24 0 5.97-1.07 7.96-2.92l-3.8-2.95c-1.08.72-2.48 1.17-4.16 1.17-3.34 0-5.86-2.21-6.76-5.11L1.39 16.1C3.37 19.93 7.35 22.6 12 22z"
-            />
+          <svg className="w-5 h-5" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.7 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
           </svg>
         )}
-        <span>{loading ? "Authenticating..." : (isRealClient && !gsiLoaded ? "Initializing Google..." : "Continue with Google")}</span>
+        <span>{loading ? "Authenticating..." : (isRealClient && !gsiLoaded ? "Initializing Google..." : (label || "Continue with Gmail / Google"))}</span>
       </button>
 
       {/* Simulator Modal */}
@@ -194,9 +182,9 @@ export default function GoogleLoginButton({ role, onLoginSuccess, onLoginFailure
                 <span className="text-[#34A853]">l</span>
                 <span className="text-[#EA4335]">e</span>
               </div>
-              <h3 className="text-xl font-semibold text-stone-900">Sign in with Google</h3>
+              <h3 className="text-xl font-semibold text-stone-900">Sign in with Gmail / Google</h3>
               <p className="text-sm text-stone-500 mt-1.5 px-6">
-                Choose a Google Account to continue to <span className="font-semibold text-primary">Lo’ma</span>
+                Choose a Gmail or Google Account to continue to <span className="font-semibold text-primary">Lo’ma</span>
               </p>
               
               <div className="mt-3 inline-block bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full border border-primary/20">

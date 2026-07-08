@@ -12,10 +12,21 @@ const app = express();
 const PORT = process.env.SERVER_PORT || process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const MONGO_DB_NAME = "loma_food_waste";
+const CLIENT_URL = process.env.REACT_APP_CLIENT_URL || "http://localhost:3000";
 
+const dbPath = path.join(__dirname, "db.json");
 let mongoClient;
 let mongoCollection;
 let memoryDB = { users: [], meals: [], orders: [] };
+
+if (fs.existsSync(dbPath)) {
+  try {
+    memoryDB = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+    console.log("✅ Seeded in-memory database from db.json");
+  } catch (err) {
+    console.error("❌ Failed to parse db.json on startup:", err.message);
+  }
+}
 
 const PAYMOB_API_KEY = process.env.PAYMOB_API_KEY;
 const PAYMOB_INTEGRATION_ID = process.env.PAYMOB_INTEGRATION_ID;
@@ -25,13 +36,13 @@ const PAYMOB_API_BASE_URL = process.env.PAYMOB_API_BASE_URL || "https://accept.p
 
 const isPaymobConfigured =
   PAYMOB_API_KEY &&
-  PAYMOB_API_KEY !== "your_paymob_api_key" &&
+  !PAYMOB_API_KEY.includes("your_") &&
   PAYMOB_INTEGRATION_ID &&
-  PAYMOB_INTEGRATION_ID !== "your_card_integration_id" &&
+  !String(PAYMOB_INTEGRATION_ID).includes("your_") &&
   PAYMOB_IFRAME_ID &&
-  PAYMOB_IFRAME_ID !== "your_iframe_id" &&
+  !String(PAYMOB_IFRAME_ID).includes("your_") &&
   PAYMOB_HMAC &&
-  PAYMOB_HMAC !== "your_hmac_secret";
+  !PAYMOB_HMAC.includes("your_");
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
@@ -44,6 +55,12 @@ function readDB() {
 
 function writeDB(data) {
   memoryDB = data;
+  try {
+    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), "utf8");
+    console.log("💾 Persisted changes to db.json");
+  } catch (err) {
+    console.error("❌ Failed to write to db.json:", err.message);
+  }
   if (mongoCollection) {
     mongoCollection
       .updateOne({ _id: "main" }, { $set: { ...data } }, { upsert: true })
@@ -92,7 +109,8 @@ app.post("/api/auth/signup", (req, res) => {
   const newUser = {
     id: "u_" + Date.now(), email, password, name, role,
     locationAddress: locationAddress || "Cairo, Maadi",
-    locationCoords: locationCoords || { lat: 30.0444, lng: 31.2357 }
+    locationCoords: locationCoords || { lat: 30.0444, lng: 31.2357 },
+    favorites: []
   };
   db.users.push(newUser);
   writeDB(db);
@@ -110,6 +128,11 @@ app.post("/api/auth/login", (req, res) => {
     u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
   );
   if (!user) return res.status(401).json({ message: "Invalid email or password" });
+
+  if (user && !user.favorites) {
+    user.favorites = [];
+    writeDB(db);
+  }
 
   const { password: _, ...safe } = user;
   res.json(safe);
@@ -147,15 +170,48 @@ app.post("/api/auth/google", async (req, res) => {
       password: "google_oauth_" + crypto.randomBytes(8).toString("hex"),
       picture: picture || "",
       locationAddress: "Cairo, Maadi",
-      locationCoords: { lat: 30.0444, lng: 31.2357 }
+      locationCoords: { lat: 30.0444, lng: 31.2357 },
+      favorites: []
     };
     db.users.push(user);
     writeDB(db);
   } else {
     if (user.role !== role)
       return res.status(400).json({ message: `This email is already registered as a ${user.role}.` });
-    if (picture && user.picture !== picture) { user.picture = picture; writeDB(db); }
+    let updated = false;
+    if (picture && user.picture !== picture) { user.picture = picture; updated = true; }
+    if (!user.favorites) { user.favorites = []; updated = true; }
+    if (updated) writeDB(db);
   }
+
+  const { password: _, ...safe } = user;
+  res.json(safe);
+});
+
+app.post("/api/users/:userId/favorites", (req, res) => {
+  const { userId } = req.params;
+  const { mealId } = req.body;
+  if (!mealId) return res.status(400).json({ message: "Missing mealId" });
+
+  const db = readDB();
+  const userIndex = db.users.findIndex(u => u.id === userId);
+  if (userIndex === -1) return res.status(404).json({ message: "User not found" });
+
+  const user = db.users[userIndex];
+  if (!user.favorites) {
+    user.favorites = [];
+  }
+
+  const idToToggle = Number(mealId) || mealId;
+  const idx = user.favorites.indexOf(idToToggle);
+  if (idx > -1) {
+    user.favorites.splice(idx, 1);
+  } else {
+    user.favorites.push(idToToggle);
+  }
+
+  db.users[userIndex] = user;
+  writeDB(db);
 
   const { password: _, ...safe } = user;
   res.json(safe);
@@ -360,8 +416,8 @@ function verifyPaymobHmac(queryHmac, obj) {
       String(obj.error_occured) === "true", String(obj.has_parent_transaction) === "true",
       obj.id, obj.integration_id,
       String(obj.is_3d_secure) === "true", String(obj.is_auth) === "true",
-      String(obj.is_capture) === "true", String(obj.is_voided) === "true",
-      String(obj.is_refunded) === "true", String(obj.is_standalone_payment) === "true",
+      String(obj.is_capture) === "true", String(obj.is_refunded) === "true",
+      String(obj.is_standalone_payment) === "true", String(obj.is_voided) === "true",
       obj.order?.id ?? "", obj.owner, String(obj.pending) === "true",
       obj.source_data?.pan ?? "", obj.source_data?.sub_type ?? "",
       obj.source_data?.type ?? "", String(obj.success) === "true"
@@ -401,7 +457,7 @@ app.post("/api/paymob/initiate-payment", async (req, res) => {
     console.log("Paymob not configured — running Mock Sandbox mode.");
     return res.status(200).json({
       mock: true, orderId,
-      paymentUrl: `http://localhost:3000/?mock_payment=true&orderId=${orderId}&amount=${totalAmount}`
+      paymentUrl: `${CLIENT_URL}/?mock_payment=true&orderId=${orderId}&amount=${totalAmount}`
     });
   }
 
@@ -456,8 +512,26 @@ app.post("/api/paymob/initiate-payment", async (req, res) => {
     const oi = db2.orders.findIndex(o => o.id === orderId);
     if (oi !== -1) { db2.orders[oi].paymobOrderId = paymobOrderId; writeDB(db2); }
 
-    const firstName = deliveryInfo?.name?.split(" ")[0] || "Guest";
-    const lastName = deliveryInfo?.name?.split(" ").slice(1).join(" ") || "User";
+    const firstName = deliveryInfo?.name?.trim().split(" ")[0] || "Guest";
+    const lastName = deliveryInfo?.name?.trim().split(" ").slice(1).join(" ") || "User";
+
+    // Sanitize phone number to match strict Paymob format (+201xxxxxxxxx)
+    let rawPhone = deliveryInfo?.phone || "";
+    let cleanPhone = rawPhone.replace(/[^\d+]/g, ""); // Keep only digits and +
+    if (cleanPhone) {
+      if (!cleanPhone.startsWith("+")) {
+        if (cleanPhone.startsWith("0")) {
+          cleanPhone = "+2" + cleanPhone;
+        } else if (cleanPhone.startsWith("20")) {
+          cleanPhone = "+" + cleanPhone;
+        } else {
+          cleanPhone = "+20" + cleanPhone;
+        }
+      }
+    }
+    if (!cleanPhone || cleanPhone.length < 10) {
+      cleanPhone = "+201000000000";
+    }
 
     const keyRes = await fetch(`${baseUrl}/api/acceptance/payment_keys`, {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -468,12 +542,15 @@ app.post("/api/paymob/initiate-payment", async (req, res) => {
           apartment: "NA", email: deliveryInfo?.email || "guest@example.com",
           floor: "NA", first_name: firstName,
           street: deliveryInfo?.address || "Maadi", building: "NA",
-          phone_number: deliveryInfo?.phone || "+201000000000",
+          phone_number: cleanPhone,
           shipping_method: "PKG", postal_code: "NA", city: "Cairo",
           country: "EG", last_name: lastName, state: "NA"
         },
         currency: "EGP", integration_id: parseInt(PAYMOB_INTEGRATION_ID),
-        lock_order_to_card: false
+        lock_order_to_card: false,
+        // CRITICAL: Redirect URL after 3DS bank authentication
+        // Without this, the iframe will get stuck in loading after bank verification
+        redirect_url: CLIENT_URL
       })
     });
     if (!keyRes.ok) throw new Error(`Paymob Payment Key failed: ${await keyRes.text()}`);
@@ -511,7 +588,7 @@ app.post("/api/paymob/callback", (req, res) => {
     return res.status(400).json({ message: "Order ID missing" });
 
   const db = readDB();
-  const orderIndex = db.orders.findIndex(o => o.paymobOrderId === paymobOrderId);
+  const orderIndex = db.orders.findIndex(o => String(o.paymobOrderId) === String(paymobOrderId));
   if (orderIndex === -1)
     return res.status(404).json({ message: "Order not found" });
 
@@ -604,8 +681,7 @@ app.post("/api/groq", async (req, res) => {
 
   const apiKey =
     process.env.REACT_APP_GROQ_API_KEY ||
-    process.env.GROQ_API_KEY ||
-    "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";
+    process.env.GROQ_API_KEY;
 
   if (!apiKey) return res.status(500).json({ message: "Groq API key not configured on server" });
 
@@ -656,8 +732,8 @@ app.post("/api/groq", async (req, res) => {
         /not found|not active|deprecated/i.test(errMsg);
 
       if (!skipToNext) {
-        // Auth error or rate limit — no point trying other models
-        return res.status(response.status).json({ message: errMsg, groq_error: data?.error });
+        // Auth error or rate limit — break out and use fallback
+        break;
       }
     } catch (networkErr) {
       console.error(`[Groq] Network error for ${model}:`, networkErr.message);
@@ -665,11 +741,32 @@ app.post("/api/groq", async (req, res) => {
     }
   }
 
-  // All models failed
-  console.error("[Groq] All models exhausted.", lastError);
-  res.status(lastError?.status || 500).json({
-    message: lastError?.message || "All Groq models failed",
-    groq_error: lastError
+  // All models failed - return fallback response instead of error
+  console.error("[Groq] All models exhausted. Using fallback response.", lastError);
+  
+  const lastUserMessage = messages.slice().reverse().find(m => m.role === "user")?.content || "";
+  let fallbackReply = "أنا مساعد Lo'ma. للأسف هناك ضغط على خوادم الذكاء الاصطناعي، لكنني هنا لمساعدتك! يمكنك تصفح الوجبات المتاحة في السوق، أو التحقق من سلة مشترياتك.";
+  if (lastUserMessage.match(/كيف|شغال|عمل/i)) fallbackReply = "نقوم بإنقاذ الطعام الفائض من المطاعم بأسعار مخفضة! تصفح السوق الآن.";
+  if (lastUserMessage.match(/وجبات|أكل|طعام/i)) fallbackReply = "لدينا العديد من الوجبات بأسعار مخفضة! تفضل بزيارة السوق للاطلاع عليها.";
+  if (lastUserMessage.match(/دفع|شراء|سلة/i)) fallbackReply = "يمكنك الدفع عبر البطاقة. افتح سلة مشترياتك لإتمام الطلب.";
+  if (lastUserMessage.match(/حساب|طلب|سجل/i)) fallbackReply = "يمكنك مراجعة طلباتك السابقة من خلال ملفك الشخصي.";
+  
+  if (!lastUserMessage.match(/[\u0600-\u06FF]/)) {
+      fallbackReply = "I am the Lo'ma assistant. Our AI servers are experiencing high traffic, but I can still help! You can browse meals in the marketplace, or check your cart.";
+      if (lastUserMessage.match(/how|work/i)) fallbackReply = "We rescue surplus food at discounted prices. Browse the marketplace now!";
+      if (lastUserMessage.match(/meal|food/i)) fallbackReply = "We have many discounted meals! Visit the marketplace to see them.";
+      if (lastUserMessage.match(/pay|checkout|cart/i)) fallbackReply = "You can pay via card. Open your cart to checkout.";
+      if (lastUserMessage.match(/account|order|history/i)) fallbackReply = "You can view your past orders in your profile.";
+  }
+
+  return res.json({
+    choices: [
+      {
+        message: {
+          content: fallbackReply
+        }
+      }
+    ]
   });
 });
 

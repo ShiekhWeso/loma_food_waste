@@ -177,9 +177,10 @@ export default function SignUpCustomer({ onLogin, onNavigate }) {
               <div className="flex-grow border-t border-outline-variant/20"></div>
             </div>
 
-            {/* Google Signup */}
+            {/* Gmail / Google Signup */}
             <GoogleLoginButton
               role="customer"
+              label="Sign Up with Gmail"
               onLoginSuccess={onLogin}
               onLoginFailure={(err) => setError(err)}
             />
